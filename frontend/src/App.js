@@ -1,72 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import Report from './Report';
 
 function App() {
-  const [dropdown1Options, setDropdown1Options] = useState([]);
-  const [dropdown2Options, setDropdown2Options] = useState([]);
-  const [dropdown1Value, setDropdown1Value] = useState('');
-  const [dropdown2Value, setDropdown2Value] = useState('');
+  const [teamOptions, setTeamOptions] = useState([]);
+  const [goalieOptions, setGoalieOptions] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [selectedGoalie, setSelectedGoalie] = useState('');
+  const [reportData, setReportData] = useState(null);
 
+  // Fetch team names from the server
   useEffect(() => {
-    // Fetch data for dropdown 1 from the local server
-    fetch('http://http://127.0.0.1:8000/teams')
+    fetch('http://127.0.0.1:8000/teams')
       .then(response => response.json())
       .then(data => {
-        setDropdown1Options(data);
+        setTeamOptions(data);
       })
       .catch(error => {
-        console.error('Error fetching dropdown 1 data:', error);
+        console.error('Error fetching team data:', error);
       });
+  }, []);
 
-    // Fetch data for dropdown 2 from the local server
-    fetch('http://http://127.0.0.1:8000/teams')
-      .then(response => response.json())
-      .then(data => {
-        setDropdown2Options(data);
-      })
-      .catch(error => {
-        console.error('Error fetching dropdown 2 data:', error);
-      });
-  }, []); // Run only once when the component mounts
+  // Fetch goalie names when a team is selected
+  useEffect(() => {
+    if (selectedTeam !== '') {
+      fetch(`http://127.0.0.1:8000/${selectedTeam}/goalies`)
+        .then(response => response.json())
+        .then(data => {
+          setGoalieOptions(data); // Store full data including id and names
+        })
+        .catch(error => {
+          console.error('Error fetching goalie data:', error);
+        });
+    }
+  }, [selectedTeam]);
 
-  const handleDropdown1Change = (event) => {
-    setDropdown1Value(event.target.value);
+  const handleTeamChange = (event) => {
+    setSelectedTeam(event.target.value);
   };
 
-  const handleDropdown2Change = (event) => {
-    setDropdown2Value(event.target.value);
+  const handleGoalieChange = (event) => {
+    setSelectedGoalie(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('Selected value from dropdown 1:', dropdown1Value);
-    console.log('Selected value from dropdown 2:', dropdown2Value);
-  };
+    console.log('Selected goalie ID:', selectedGoalie);
+    if (selectedGoalie) {
+        setReportData(selectedGoalie); // Pass the selectedGoalie ID
+    } else {
+        console.log('No goalie selected');
+    }
+};
 
   return (
     <div className="App">
-      <h1>Dropdown Form</h1>
+      <h1>Team and Goalie Dropdown</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="dropdown1">Dropdown 1:</label>
-          <select id="dropdown1" value={dropdown1Value} onChange={handleDropdown1Change}>
-            <option value="">Select Option 1</option>
-            {dropdown1Options.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+          <label htmlFor="team">Select a Team:</label>
+          <select id="team" value={selectedTeam} onChange={handleTeamChange}>
+            <option value="">Select a Team</option>
+            {teamOptions.map((team, index) => (
+              <option key={index} value={team}>{team}</option>
             ))}
           </select>
         </div>
-        <div>
-          <label htmlFor="dropdown2">Dropdown 2:</label>
-          <select id="dropdown2" value={dropdown2Value} onChange={handleDropdown2Change}>
-            <option value="">Select Option 2</option>
-            {dropdown2Options.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
+        {selectedTeam && (
+          <div>
+            <label htmlFor="goalie">Select a Goalie:</label>
+            <select id="goalie" value={selectedGoalie} onChange={handleGoalieChange}>
+              <option value="">Select a Goalie</option>
+              {goalieOptions.map((goalie) => (
+                <option key={goalie.id} value={goalie.id}>{goalie.firstName} {goalie.lastName}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <button type="submit">Submit</button>
       </form>
+      {reportData && <Report goalieID={reportData} />}
     </div>
   );
 }
