@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScatterPlot } from '@nivo/scatterplot';
-import rinkImage from './moneypuckrink half.jpg';
+import { Scatter } from 'react-chartjs-2';
+import { Chart as ChartJS, registerables } from 'chart.js';
+
+ChartJS.register(...registerables);
 
 const Report = ({ goalieID }) => {
   const [data, setData] = useState([]);
@@ -39,6 +41,60 @@ const Report = ({ goalieID }) => {
       });
   }, [goalieID]);
 
+  const scatterData = {
+    datasets: [
+      {
+        label: 'NHL Shots',
+        data: data,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        pointRadius: 5,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        min: 0,
+        max: 100,
+        title: {
+          display: true,
+          text: 'X axis',
+        },
+      },
+      y: {
+        type: 'linear',
+        min: -42.5,
+        max: 42.5,
+        title: {
+          display: true,
+          text: 'Y axis',
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.dataset.label || '';
+            if (label) {
+              return `${label}: (${context.raw.x}, ${context.raw.y})`;
+            }
+            return `(${context.raw.x}, ${context.raw.y})`;
+          },
+        },
+      },
+    },
+  };
+
   return (
     <div>
       <h2>Report Data</h2>
@@ -49,40 +105,8 @@ const Report = ({ goalieID }) => {
         </pre>
       )}
       <h3>Scatter Plot</h3>
-      <div style={{ height: '400px', position: 'relative' }}>
-        <img
-          src={rinkImage}
-          alt="Rink"
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            zIndex: 0
-          }}
-        />
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%' }}>
-          <ScatterPlot
-            width={400}
-            height={400}
-            data={[{ id: 'scatter', data: data }]}
-            xScale={{ type: 'linear', min: 0, max: 100 }}
-            yScale={{ type: 'linear', min: -42.5, max: 42.5 }}
-            margin={{ top: 20, right: 20, bottom: 60, left: 80 }}
-            axisBottom={{ legend: 'X axis', legendPosition: 'middle', legendOffset: 40 }}
-            axisLeft={{ legend: 'Y axis', legendPosition: 'middle', legendOffset: -60 }}
-            renderNode={({ node, x, y, size, color }) => (
-              <circle
-                cx={x}
-                cy={y}
-                r={size / 2}
-                fill={color}
-                strokeWidth="2"
-                stroke="#fff"
-              />
-            )}
-            colors={{ scheme: 'category10' }}
-          />
-        </div>
+      <div style={{ height: '400px' }}>
+        <Scatter data={scatterData} options={options} />
       </div>
     </div>
   );
