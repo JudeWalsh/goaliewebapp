@@ -32,10 +32,13 @@ async def NHL_teams():
 async def team_goalies(team_code):
     return db.team_goalies(team_code)
 
-@app.get("/report/{goalieID}")
+@app.get("/goalreport/{goalieID}")
 async def goalie_report(goalieID):
-    db.goalie_report(goalieID)
-    return db.goalie
+    if goalieID == 'all':
+        return db.average_goalie
+    else:
+        db.goalie_report(goalieID)
+        return db.goalie
 
 @app.get("/coordinates/{goalieID}")
 async def goalie_coordinates(goalieID):

@@ -46,7 +46,11 @@ class Database:
         self.teamsGoalies = []
         self.conn = sqlite3.connect('NHL.db')
         self.cursor = self.conn.cursor()
+        # self.temp_db_stuff()
+        # self.update_goalies()
         self.goalie = {}
+        self.average_goalie = {}
+        self.average_goalie_report()
 
     def get_Goalies(self):
         self.teamsGoalies = []
@@ -96,7 +100,7 @@ class Database:
                                        "lastName.default": "lastName"}, inplace=True)
                     df = df[[col for col in columns if col in df.columns]]
                     # Insert DataFrame into SQLite table
-                    df.to_sql(name='goalies', con=conn, if_exists='append', index=False)
+                    df.to_sql(name='goalies', con=self.conn, if_exists='append', index=False)
         # Commit the transaction and close the connection
         self.conn.commit()
 
@@ -113,8 +117,11 @@ class Database:
         # Return the list of dictionaries
         return result
 
-    def goalie_report(self, goalieID):
-        query = "SELECT * FROM shots WHERE goalieIdForShot = ?"
+    def goalie_report(self, goalieID, season=2022):
+        goals_report = {}
+        saves_report = {}
+        shots_report = {}
+        query = f"SELECT * FROM shots WHERE goalieIdForShot = ? AND season >= {season}"
         df = pd.read_sql_query(query, self.conn, params=(goalieID,))
 
         # Drop columns with all NaN values
@@ -133,9 +140,11 @@ class Database:
             lambda row: 'inside' if is_within_polygon(row['xCordAdjusted'], row['yCordAdjusted'],
                                                       polygon) else 'outside', axis=1)
 
+        '''
+        DIVIDE DATA BY AREA FOR GOALS SCORED
+        '''
         # Filter rows for goals
         goals_df = df[df['event'] == 'GOAL'].copy()
-        shots_df = df[df['event'] == 'SHOT'].copy()
 
         # Add the 'side' column
         goals_df['side'] = goals_df['yCordAdjusted'].apply(
@@ -143,7 +152,7 @@ class Database:
 
         # Calculate side distribution
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
-        self.goalie['side_dist_goals'] = side_distribution
+        goals_report['side_dist_goals'] = side_distribution
 
         polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
         polygon = Polygon(polygon_points)
@@ -154,7 +163,7 @@ class Database:
             return polygon.contains(point)
 
         plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
-        self.goalie['plate_dist_goals'] = plate_distribution
+        goals_report['plate_dist_goals'] = plate_distribution
 
         inside_home_plate_df = goals_df[goals_df['Home Plate'] == 'inside']
 
@@ -162,14 +171,196 @@ class Database:
         outside_home_plate_df = goals_df[goals_df['Home Plate'] == 'outside']
 
         side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
-        self.goalie['inside_dist_goals'] = side_distribution
+        goals_report['inside_dist_goals'] = side_distribution
 
         side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
-        self.goalie['outside_dist_goals'] = side_distribution
+        goals_report['outside_dist_goals'] = side_distribution
+        self.goalie['goals'] = goals_report
 
-    def goalie_shot_cords(self, goalieID):
-        query = "SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL';"
+        '''
+        DIVIDE DATA BY AREA FOR SHOTS SAVED
+        '''
+        save_df = df[df['event'] == 'SHOT'].copy()
+
+        save_df['side'] = save_df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
+        # Calculate side distribution
+        side_distribution = save_df['side'].value_counts(normalize=True) * 100
+        saves_report['side_dist_saves'] = side_distribution
+
+        plate_distribution = save_df['Home Plate'].value_counts(normalize=True) * 100
+        saves_report['plate_dist_saves'] = plate_distribution
+
+        inside_home_plate_df = save_df[save_df['Home Plate'] == 'inside']
+
+        # Create DataFrame for points outside the home plate
+        outside_home_plate_df = save_df[save_df['Home Plate'] == 'outside']
+
+        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
+        saves_report['inside_dist_saves'] = side_distribution
+
+        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
+        saves_report['outside_dist_saves'] = side_distribution
+        self.goalie['saves'] = saves_report
+
+        '''
+        DIVIDE DATA BY AREA FOR SHOTS ON GOAL, SAVES AND GOALS
+        '''
+        shots_df = df[df['event'] != 'MISS'].copy()
+
+        shots_df['side'] = shots_df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
+        # Calculate side distribution
+        side_distribution = shots_df['side'].value_counts(normalize=True) * 100
+        shots_report['side_dist_shots'] = side_distribution
+
+        plate_distribution = shots_df['Home Plate'].value_counts(normalize=True) * 100
+        shots_report['plate_dist_shots'] = plate_distribution
+
+        inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
+
+        # Create DataFrame for points outside the home plate
+        outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
+
+        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
+        shots_report['inside_dist_shots'] = side_distribution
+
+        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
+        shots_report['outside_dist_shots'] = side_distribution
+        self.goalie['shots'] = shots_report
+
+    def average_goalie_report(self, season=2022):
+        goals_report = {}
+        saves_report = {}
+        shots_report = {}
+        query = f"SELECT * FROM shots WHERE season >= {season}"
+        df = pd.read_sql_query(query, self.conn)
+
+        # Drop columns with all NaN values
+        df = df.dropna(how='all', axis=1)
+
+        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
+        polygon = Polygon(polygon_points)
+
+        # Function to check if a point is within the polygon
+        def is_within_polygon(x, y, polygon):
+            point = Point(x, y)
+            return polygon.contains(point)
+
+        # Apply the function to create the "Home Plate" column
+        df['Home Plate'] = df.apply(
+            lambda row: 'inside' if is_within_polygon(row['xCordAdjusted'], row['yCordAdjusted'],
+                                                      polygon) else 'outside', axis=1)
+
+        '''
+        DIVIDE DATA BY AREA FOR GOALS SCORED
+        '''
+        # Filter rows for goals
+        goals_df = df[df['event'] == 'GOAL'].copy()
+
+        # Add the 'side' column
+        goals_df['side'] = goals_df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
+        # Calculate side distribution
+        side_distribution = goals_df['side'].value_counts(normalize=True) * 100
+        goals_report['side_dist_goals'] = side_distribution
+
+        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
+        polygon = Polygon(polygon_points)
+
+        # Function to check if a point is within the polygon
+        def is_within_polygon(x, y, polygon):
+            point = Point(x, y)
+            return polygon.contains(point)
+
+        plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
+        goals_report['plate_dist_goals'] = plate_distribution
+
+        inside_home_plate_df = goals_df[goals_df['Home Plate'] == 'inside']
+
+        # Create DataFrame for points outside the home plate
+        outside_home_plate_df = goals_df[goals_df['Home Plate'] == 'outside']
+
+        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
+        goals_report['inside_dist_goals'] = side_distribution
+
+        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
+        goals_report['outside_dist_goals'] = side_distribution
+        self.average_goalie['goals'] = goals_report
+
+        '''
+        DIVIDE DATA BY AREA FOR SHOTS SAVED
+        '''
+        save_df = df[df['event'] == 'SHOT'].copy()
+
+        save_df['side'] = save_df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
+        # Calculate side distribution
+        side_distribution = save_df['side'].value_counts(normalize=True) * 100
+        saves_report['side_dist_saves'] = side_distribution
+
+        plate_distribution = save_df['Home Plate'].value_counts(normalize=True) * 100
+        saves_report['plate_dist_saves'] = plate_distribution
+
+        inside_home_plate_df = save_df[save_df['Home Plate'] == 'inside']
+
+        # Create DataFrame for points outside the home plate
+        outside_home_plate_df = save_df[save_df['Home Plate'] == 'outside']
+
+        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
+        saves_report['inside_dist_saves'] = side_distribution
+
+        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
+        saves_report['outside_dist_saves'] = side_distribution
+        self.average_goalie['saves'] = saves_report
+
+        '''
+        DIVIDE DATA BY AREA FOR SHOTS ON GOAL, SAVES AND GOALS
+        '''
+        shots_df = df[df['event'] != 'MISS'].copy()
+
+        shots_df['side'] = shots_df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
+        # Calculate side distribution
+        side_distribution = shots_df['side'].value_counts(normalize=True) * 100
+        shots_report['side_dist_shots'] = side_distribution
+
+        plate_distribution = shots_df['Home Plate'].value_counts(normalize=True) * 100
+        shots_report['plate_dist_shots'] = plate_distribution
+
+        inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
+
+        # Create DataFrame for points outside the home plate
+        outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
+
+        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
+        shots_report['inside_dist_shots'] = side_distribution
+
+        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
+        shots_report['outside_dist_shots'] = side_distribution
+        self.average_goalie['shots'] = shots_report
+
+    def goalie_shot_cords(self, goalieID, season=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shotID FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL' AND season >= {season};"
         df = pd.read_sql_query(query, self.conn, params=(goalieID,))
         df = df.dropna(how='all', axis=1)
         json_df = df.to_dict(orient='records')
         return json_df
+
+    def temp_db_stuff(self):
+        # Read "NHL_shots.csv" into a pandas DataFrame
+        df = pd.read_csv("2014-2022.csv")
+
+        # Drop the "shots" table if it exists
+        self.cursor.execute("DROP TABLE IF EXISTS shots")
+
+        # Write the DataFrame to the "shots" table in the SQLite database
+        df.to_sql(name='shots', con=self.conn, if_exists='replace', index=False)
+
+        # Commit the transaction to save the changes
+        self.conn.commit()

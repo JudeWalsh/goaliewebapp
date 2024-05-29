@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Report from './Report';
+import GoalReport from './GoalReport';
 
 function App() {
   const [teamOptions, setTeamOptions] = useState([]);
@@ -78,7 +78,7 @@ function App() {
         )}
         <button type="submit">Submit</button>
       </form>
-      {reportData && <Report goalieID={reportData} />}
+      {reportData && <GoalReport goalieID={reportData} />}
     </div>
   );
 }
