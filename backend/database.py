@@ -212,24 +212,45 @@ class Database:
         shots_df['side'] = shots_df['yCordAdjusted'].apply(
             lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
-        # Calculate side distribution
-        side_distribution = shots_df['side'].value_counts(normalize=True) * 100
-        shots_report['side_dist_shots'] = side_distribution
+        glove_shots = shots_df[shots_df['side'] == 'Glove'].copy()
+        stick_shots = shots_df[shots_df['side'] == 'Stick'].copy()
+        RR_shots = shots_df[shots_df['side'] == 'Stick'].copy()
 
-        plate_distribution = shots_df['Home Plate'].value_counts(normalize=True) * 100
-        shots_report['plate_dist_shots'] = plate_distribution
+        glove_save_percentage = glove_shots['event'].value_counts(normalize=True) * 100
+        stick_save_percentage = stick_shots['event'].value_counts(normalize=True) * 100
+        RR_save_percentage = RR_shots['event'].value_counts(normalize=True) * 100
 
+        shots_report['glove_save_percent'] = glove_save_percentage
+        shots_report['stick_save_percent'] = stick_save_percentage
+        shots_report['RR_save_percent'] = RR_save_percentage
+
+        # Create DataFrame for points inside the home plate
         inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
         outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
 
-        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
-        shots_report['inside_dist_shots'] = side_distribution
+        inside_save_percentage = inside_home_plate_df['event'].value_counts(normalize=True) * 100
+        outside_save_percentage = outside_home_plate_df['event'].value_counts(normalize=True) * 100
 
-        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
-        shots_report['outside_dist_shots'] = side_distribution
-        self.goalie['shots'] = shots_report
+        shots_report['inside_save_percent'] = inside_save_percentage
+        shots_report['outside_save_percent'] = outside_save_percentage
+
+        outside_glove = outside_home_plate_df[outside_home_plate_df['side'] == 'Glove'].copy()
+        inside_glove = inside_home_plate_df[inside_home_plate_df['side'] == 'Glove'].copy()
+        outside_stick = outside_home_plate_df[outside_home_plate_df['side'] == 'Stick'].copy()
+        inside_stick = inside_home_plate_df[inside_home_plate_df['side'] == 'Stick'].copy()
+        outside_RR = outside_home_plate_df[outside_home_plate_df['side'] == 'Head On']
+        inside_RR = inside_home_plate_df[inside_home_plate_df['side'] == 'Head On']
+
+        shots_report['outside_glove_save_percent'] = outside_glove['event'].value_counts(normalize=True) * 100
+        shots_report['inside_glove_save_percent'] = inside_glove['event'].value_counts(normalize=True) * 100
+        shots_report['outside_stick_save_percent'] = outside_stick['event'].value_counts(normalize=True) * 100
+        shots_report['inside_stick_save_percent'] = inside_stick['event'].value_counts(normalize=True) * 100
+        shots_report['outside_RR_save_percent'] = outside_RR['event'].value_counts(normalize=True) * 100
+        shots_report['inside_RR_save_percent'] = inside_RR['event'].value_counts(normalize=True) * 100
+
+        self.average_goalie['shots'] = shots_report
 
     def average_goalie_report(self, season=2022):
         goals_report = {}
@@ -326,23 +347,44 @@ class Database:
         shots_df['side'] = shots_df['yCordAdjusted'].apply(
             lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
-        # Calculate side distribution
-        side_distribution = shots_df['side'].value_counts(normalize=True) * 100
-        shots_report['side_dist_shots'] = side_distribution
+        glove_shots = shots_df[shots_df['side'] == 'Glove'].copy()
+        stick_shots = shots_df[shots_df['side'] == 'Stick'].copy()
+        RR_shots = shots_df[shots_df['side'] == 'Stick'].copy()
 
-        plate_distribution = shots_df['Home Plate'].value_counts(normalize=True) * 100
-        shots_report['plate_dist_shots'] = plate_distribution
+        glove_save_percentage = glove_shots['event'].value_counts(normalize=True) * 100
+        stick_save_percentage = stick_shots['event'].value_counts(normalize=True) * 100
+        RR_save_percentage = RR_shots['event'].value_counts(normalize=True) * 100
 
+        shots_report['glove_save_percent'] = glove_save_percentage
+        shots_report['stick_save_percent'] = stick_save_percentage
+        shots_report['RR_save_percent'] = RR_save_percentage
+
+        # Create DataFrame for points inside the home plate
         inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
         outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
 
-        side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
-        shots_report['inside_dist_shots'] = side_distribution
+        inside_save_percentage = inside_home_plate_df['event'].value_counts(normalize=True) * 100
+        outside_save_percentage = outside_home_plate_df['event'].value_counts(normalize=True) * 100
 
-        side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
-        shots_report['outside_dist_shots'] = side_distribution
+        shots_report['inside_save_percent'] = inside_save_percentage
+        shots_report['outside_save_percent'] = outside_save_percentage
+
+        outside_glove = outside_home_plate_df[outside_home_plate_df['side'] == 'Glove'].copy()
+        inside_glove = inside_home_plate_df[inside_home_plate_df['side'] == 'Glove'].copy()
+        outside_stick = outside_home_plate_df[outside_home_plate_df['side'] == 'Stick'].copy()
+        inside_stick = inside_home_plate_df[inside_home_plate_df['side'] == 'Stick'].copy()
+        outside_RR = outside_home_plate_df[outside_home_plate_df['side'] == 'Head On']
+        inside_RR = inside_home_plate_df[inside_home_plate_df['side'] == 'Head On']
+
+        shots_report['outside_glove_save_percent'] = outside_glove['event'].value_counts(normalize=True) * 100
+        shots_report['inside_glove_save_percent'] = inside_glove['event'].value_counts(normalize=True) * 100
+        shots_report['outside_stick_save_percent'] = outside_stick['event'].value_counts(normalize=True) * 100
+        shots_report['inside_stick_save_percent'] = inside_stick['event'].value_counts(normalize=True) * 100
+        shots_report['outside_RR_save_percent'] = outside_RR['event'].value_counts(normalize=True) * 100
+        shots_report['inside_RR_save_percent'] = inside_RR['event'].value_counts(normalize=True) * 100
+
         self.average_goalie['shots'] = shots_report
 
     def goalie_shot_cords(self, goalieID, season=2022):
