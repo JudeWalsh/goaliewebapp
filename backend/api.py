@@ -42,4 +42,7 @@ async def goalie_report(goalieID):
 
 @app.get("/coordinates/{goalieID}")
 async def goalie_coordinates(goalieID):
-    return db.goalie_shot_cords(goalieID)
+    if goalieID == 'all':
+        return db.all_goalie_shot_cords()
+    else:
+        return db.goalie_shot_cords(goalieID)

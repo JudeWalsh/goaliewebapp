@@ -250,7 +250,7 @@ class Database:
         shots_report['outside_RR_save_percent'] = outside_RR['event'].value_counts(normalize=True) * 100
         shots_report['inside_RR_save_percent'] = inside_RR['event'].value_counts(normalize=True) * 100
 
-        self.average_goalie['shots'] = shots_report
+        self.goalie['shots'] = shots_report
 
     def average_goalie_report(self, season=2022):
         goals_report = {}
@@ -388,8 +388,15 @@ class Database:
         self.average_goalie['shots'] = shots_report
 
     def goalie_shot_cords(self, goalieID, season=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shotID FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL' AND season >= {season};"
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL' AND season >= {season};"
         df = pd.read_sql_query(query, self.conn, params=(goalieID,))
+        df = df.dropna(how='all', axis=1)
+        json_df = df.to_dict(orient='records')
+        return json_df
+
+    def all_goalie_shot_cords(self, season=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE event = 'GOAL' AND season >= {season};"
+        df = pd.read_sql_query(query, self.conn)
         df = df.dropna(how='all', axis=1)
         json_df = df.to_dict(orient='records')
         return json_df
