@@ -47,6 +47,7 @@ const GoalReport = ({ goalieID }) => {
             shooterName: point.shooterName,
             teamCode: point.teamCode,
             season: point.season,
+            side: point.side,
           }));
           setData1(transformedData1);
         } else {
@@ -86,25 +87,65 @@ const GoalReport = ({ goalieID }) => {
       },
       tickPositions: [-42.5, -30, -20, -10, 0, 10, 20, 30, 42.5], // Explicitly setting tick positions
     },
-    series: [{
-      name: 'NHL Shots 1',
-      data: data1.map(point => ({
-        x: point.x,
-        y: point.y,
-        shooterName: point.shooterName,
-        teamCode: point.teamCode,
-        season: point.season,
-      })),
-      marker: {
-        radius: 5,
-        fillColor: 'rgba(54, 162, 235, 0.6)',
-        lineColor: 'rgba(54, 162, 235, 1)',
-        lineWidth: 1,
+    series: [
+      {
+        name: 'Stick',
+        data: data1.filter(point => point.side === 'Stick').map(point => ({
+          x: point.x,
+          y: point.y,
+          shooterName: point.shooterName,
+          teamCode: point.teamCode,
+          season: point.season,
+          side: point.side,
+        })),
+        marker: {
+          symbol: 'circle',
+          radius: 5,
+          fillColor: 'rgba(54, 162, 235, 0.6)',
+          lineColor: 'rgba(54, 162, 235, 1)',
+          lineWidth: 1,
+        },
       },
-    }],
+      {
+        name: 'Glove',
+        data: data1.filter(point => point.side === 'Glove').map(point => ({
+          x: point.x,
+          y: point.y,
+          shooterName: point.shooterName,
+          teamCode: point.teamCode,
+          season: point.season,
+          side: point.side,
+        })),
+        marker: {
+          symbol: 'circle',
+          radius: 5,
+          fillColor: 'rgba(75, 192, 192, 0.6)',
+          lineColor: 'rgba(75, 192, 192, 1)',
+          lineWidth: 1,
+        },
+      },
+      {
+        name: 'Head On',
+        data: data1.filter(point => point.side === 'Head On').map(point => ({
+          x: point.x,
+          y: point.y,
+          shooterName: point.shooterName,
+          teamCode: point.teamCode,
+          season: point.season,
+          side: point.side,
+        })),
+        marker: {
+          symbol: 'circle',
+          radius: 5,
+          fillColor: 'rgba(255, 99, 132, 0.6)',
+          lineColor: 'rgba(255, 99, 132, 1)',
+          lineWidth: 1,
+        },
+      }
+    ],
     tooltip: {
       formatter: function () {
-        return `${this.point.shooterName} for ${this.point.teamCode} in ${this.point.season} `;
+        return `${this.point.side} ${this.point.shooterName} for ${this.point.teamCode} in ${this.point.season} `;
       }
     },
   };
