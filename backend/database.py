@@ -42,6 +42,8 @@ class Database:
             "WSH",  # Washington Capitals
             "WPG"  # Winnipeg Jets
         ]
+        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
+        self.house = Polygon(polygon_points)
         self.selectedTeam = ''
         self.teamsGoalies = []
         self.conn = sqlite3.connect('NHL.db')
@@ -117,6 +119,10 @@ class Database:
         # Return the list of dictionaries
         return result
 
+    def is_within_house(self, x, y):
+        point = Point(x, y)
+        return self.house.contains(point)
+
     def goalie_report(self, goalieID, season=2022):
         goals_report = {}
         saves_report = {}
@@ -127,18 +133,9 @@ class Database:
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
 
-        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
-        polygon = Polygon(polygon_points)
-
-        # Function to check if a point is within the polygon
-        def is_within_polygon(x, y, polygon):
-            point = Point(x, y)
-            return polygon.contains(point)
-
         # Apply the function to create the "Home Plate" column
         df['Home Plate'] = df.apply(
-            lambda row: 'inside' if is_within_polygon(row['xCordAdjusted'], row['yCordAdjusted'],
-                                                      polygon) else 'outside', axis=1)
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
 
         '''
         DIVIDE DATA BY AREA FOR GOALS SCORED
@@ -153,14 +150,6 @@ class Database:
         # Calculate side distribution
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
         goals_report['side_dist_goals'] = side_distribution
-
-        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
-        polygon = Polygon(polygon_points)
-
-        # Function to check if a point is within the polygon
-        def is_within_polygon(x, y, polygon):
-            point = Point(x, y)
-            return polygon.contains(point)
 
         plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
         goals_report['plate_dist_goals'] = plate_distribution
@@ -265,15 +254,9 @@ class Database:
         polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
         polygon = Polygon(polygon_points)
 
-        # Function to check if a point is within the polygon
-        def is_within_polygon(x, y, polygon):
-            point = Point(x, y)
-            return polygon.contains(point)
-
         # Apply the function to create the "Home Plate" column
         df['Home Plate'] = df.apply(
-            lambda row: 'inside' if is_within_polygon(row['xCordAdjusted'], row['yCordAdjusted'],
-                                                      polygon) else 'outside', axis=1)
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
 
         '''
         DIVIDE DATA BY AREA FOR GOALS SCORED
@@ -288,14 +271,6 @@ class Database:
         # Calculate side distribution
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
         goals_report['side_dist_goals'] = side_distribution
-
-        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
-        polygon = Polygon(polygon_points)
-
-        # Function to check if a point is within the polygon
-        def is_within_polygon(x, y, polygon):
-            point = Point(x, y)
-            return polygon.contains(point)
 
         plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
         goals_report['plate_dist_goals'] = plate_distribution
@@ -387,17 +362,45 @@ class Database:
 
         self.average_goalie['shots'] = shots_report
 
-    def goalie_shot_cords(self, goalieID, season=2022):
+
+    def adjust_df(self, df):
+        # Apply the function to create the "Home Plate" column
+        df['Home Plate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'],
+                                                         row['yCordAdjusted']) else 'outside', axis=1)
+        df['side'] = df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+        return df
+
+    def goal_shot_cords(self, goalieID, season=2022):
         query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL' AND season >= {season};"
         df = pd.read_sql_query(query, self.conn, params=(goalieID,))
         df = df.dropna(how='all', axis=1)
+        df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
-    def all_goalie_shot_cords(self, season=2022):
+    def all_goal_shot_cords(self, season=2022):
         query = f"SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE event = 'GOAL' AND season >= {season};"
         df = pd.read_sql_query(query, self.conn)
         df = df.dropna(how='all', axis=1)
+        df = self.adjust_df(df)
+        json_df = df.to_dict(orient='records')
+        return json_df
+
+    def save_shot_cords(self, goalieID, season=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season FROM shots WHERE goalieIdForShot = ? AND event = 'SHOT' AND season >= {season};"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID,))
+        df = df.dropna(how='all', axis=1)
+        df = self.adjust_df(df)
+        json_df = df.to_dict(orient='records')
+        return json_df
+
+    def all_save_shot_cords(self, season=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE event = 'SHOT' AND season >= {season};"
+        df = pd.read_sql_query(query, self.conn)
+        df = df.dropna(how='all', axis=1)
+        df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 

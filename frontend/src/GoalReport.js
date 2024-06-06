@@ -8,7 +8,6 @@ HighchartsHeatmap(Highcharts);
 
 const GoalReport = ({ goalieID }) => {
   const [data1, setData1] = useState([]);
-  const [data2, setData2] = useState([]);
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
 
@@ -38,7 +37,7 @@ const GoalReport = ({ goalieID }) => {
 
   // Fetch the coordinates data for the first scatter plot
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/coordinates/${goalieID}`)
+    fetch(`http://127.0.0.1:8000/coordinates/goals/${goalieID}`)
       .then(response => response.json())
       .then(data => {
         if (data) {
@@ -58,26 +57,6 @@ const GoalReport = ({ goalieID }) => {
         console.error('Error fetching coordinates:', error);
       });
   }, [goalieID]);
-
-  // Fetch the coordinates data for the second scatter plot
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/coordinates/all`)
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          const transformedData2 = data.map(point => ({
-            x: point.xCordAdjusted,
-            y: point.yCordAdjusted
-          }));
-          setData2(transformedData2);
-        } else {
-          console.error('No data received');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching coordinates:', error);
-      });
-  }, []);
 
   const options1 = {
     chart: {
@@ -130,48 +109,6 @@ const GoalReport = ({ goalieID }) => {
     },
   };
 
-  const options2 = {
-    chart: {
-      type: 'scatter',
-      plotBackgroundImage: 'moneypuckrink half.jpg', // Ensure the path is correct
-      plotBackgroundSize: '100% 100%', // Adjust size to fit within the chart area
-      backgroundColor: null,
-      width: 500,  // Set the desired width of the chart
-      height: 500, // Set the desired height of the chart
-    },
-    title: {
-      text: 'Goals Scored on Every Goalie'
-    },
-    xAxis: {
-      min: 0,
-      max: 100,
-      title: {
-        text: 'X axis',
-      },
-    },
-    yAxis: {
-      min: -42.5,
-      max: 42.5,
-      title: {
-        text: 'Y axis',
-      },
-      tickPositions: [-42.5, -30, -20, -10, 0, 10, 20, 30, 42.5], // Explicitly setting tick positions
-    },
-    series: [{
-      name: 'NHL Shots 2',
-      data: data2.map(point => [point.x, point.y]),
-      marker: {
-        radius: 5,
-        fillColor: 'rgba(54, 162, 235, 0.6)',
-        lineColor: 'rgba(54, 162, 235, 1)',
-        lineWidth: 1,
-      },
-    }],
-    tooltip: {
-      enabled: false,
-    },
-  };
-
   return (
     <div>
      <h2>Goals Scored on Selected Goalie</h2>
@@ -199,11 +136,6 @@ const GoalReport = ({ goalieID }) => {
           highcharts={Highcharts}
           options={options1}
           containerProps={{ style: { width: '100%', height: '100%' } }}
-        />
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options2}
-          containerProps={{ style: { width: '100%', height: '100%'} }}
         />
       </div>
     </div>

@@ -40,9 +40,16 @@ async def goalie_report(goalieID):
         db.goalie_report(goalieID)
         return db.goalie
 
-@app.get("/coordinates/{goalieID}")
-async def goalie_coordinates(goalieID):
+@app.get("/coordinates/goals/{goalieID}")
+async def goal_coordinates(goalieID):
     if goalieID == 'all':
-        return db.all_goalie_shot_cords()
+        return db.all_goal_shot_cords()
     else:
-        return db.goalie_shot_cords(goalieID)
+        return db.goal_shot_cords(goalieID)
+
+@app.get("/coordinates/saves/{goalieID}")
+async def save_coordinates(goalieID):
+    if goalieID == 'all':
+        return db.all_save_shot_cords()
+    else:
+        return db.save_shot_cords(goalieID)
