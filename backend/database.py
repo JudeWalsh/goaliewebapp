@@ -134,7 +134,7 @@ class Database:
         df = df.dropna(how='all', axis=1)
 
         # Apply the function to create the "Home Plate" column
-        df['Home Plate'] = df.apply(
+        df['homePlate'] = df.apply(
             lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
 
         '''
@@ -151,13 +151,13 @@ class Database:
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
         goals_report['side_dist_goals'] = side_distribution
 
-        plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
+        plate_distribution = goals_df['homePlate'].value_counts(normalize=True) * 100
         goals_report['plate_dist_goals'] = plate_distribution
 
-        inside_home_plate_df = goals_df[goals_df['Home Plate'] == 'inside']
+        inside_home_plate_df = goals_df[goals_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = goals_df[goals_df['Home Plate'] == 'outside']
+        outside_home_plate_df = goals_df[goals_df['homePlate'] == 'outside']
 
         side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
         goals_report['inside_dist_goals'] = side_distribution
@@ -178,13 +178,13 @@ class Database:
         side_distribution = save_df['side'].value_counts(normalize=True) * 100
         saves_report['side_dist_saves'] = side_distribution
 
-        plate_distribution = save_df['Home Plate'].value_counts(normalize=True) * 100
+        plate_distribution = save_df['homePlate'].value_counts(normalize=True) * 100
         saves_report['plate_dist_saves'] = plate_distribution
 
-        inside_home_plate_df = save_df[save_df['Home Plate'] == 'inside']
+        inside_home_plate_df = save_df[save_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = save_df[save_df['Home Plate'] == 'outside']
+        outside_home_plate_df = save_df[save_df['homePlate'] == 'outside']
 
         side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
         saves_report['inside_dist_saves'] = side_distribution
@@ -214,10 +214,10 @@ class Database:
         shots_report['RR_save_percent'] = RR_save_percentage
 
         # Create DataFrame for points inside the home plate
-        inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
+        inside_home_plate_df = shots_df[shots_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
+        outside_home_plate_df = shots_df[shots_df['homePlate'] == 'outside']
 
         inside_save_percentage = inside_home_plate_df['event'].value_counts(normalize=True) * 100
         outside_save_percentage = outside_home_plate_df['event'].value_counts(normalize=True) * 100
@@ -254,8 +254,8 @@ class Database:
         polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
         polygon = Polygon(polygon_points)
 
-        # Apply the function to create the "Home Plate" column
-        df['Home Plate'] = df.apply(
+        # Apply the function to create the "homePlate" column
+        df['homePlate'] = df.apply(
             lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
 
         '''
@@ -272,13 +272,13 @@ class Database:
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
         goals_report['side_dist_goals'] = side_distribution
 
-        plate_distribution = goals_df['Home Plate'].value_counts(normalize=True) * 100
+        plate_distribution = goals_df['homePlate'].value_counts(normalize=True) * 100
         goals_report['plate_dist_goals'] = plate_distribution
 
-        inside_home_plate_df = goals_df[goals_df['Home Plate'] == 'inside']
+        inside_home_plate_df = goals_df[goals_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = goals_df[goals_df['Home Plate'] == 'outside']
+        outside_home_plate_df = goals_df[goals_df['homePlate'] == 'outside']
 
         side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
         goals_report['inside_dist_goals'] = side_distribution
@@ -299,13 +299,13 @@ class Database:
         side_distribution = save_df['side'].value_counts(normalize=True) * 100
         saves_report['side_dist_saves'] = side_distribution
 
-        plate_distribution = save_df['Home Plate'].value_counts(normalize=True) * 100
+        plate_distribution = save_df['homePlate'].value_counts(normalize=True) * 100
         saves_report['plate_dist_saves'] = plate_distribution
 
-        inside_home_plate_df = save_df[save_df['Home Plate'] == 'inside']
+        inside_home_plate_df = save_df[save_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = save_df[save_df['Home Plate'] == 'outside']
+        outside_home_plate_df = save_df[save_df['homePlate'] == 'outside']
 
         side_distribution = inside_home_plate_df['side'].value_counts(normalize=True) * 100
         saves_report['inside_dist_saves'] = side_distribution
@@ -335,10 +335,10 @@ class Database:
         shots_report['RR_save_percent'] = RR_save_percentage
 
         # Create DataFrame for points inside the home plate
-        inside_home_plate_df = shots_df[shots_df['Home Plate'] == 'inside']
+        inside_home_plate_df = shots_df[shots_df['homePlate'] == 'inside']
 
         # Create DataFrame for points outside the home plate
-        outside_home_plate_df = shots_df[shots_df['Home Plate'] == 'outside']
+        outside_home_plate_df = shots_df[shots_df['homePlate'] == 'outside']
 
         inside_save_percentage = inside_home_plate_df['event'].value_counts(normalize=True) * 100
         outside_save_percentage = outside_home_plate_df['event'].value_counts(normalize=True) * 100
@@ -364,8 +364,8 @@ class Database:
 
 
     def adjust_df(self, df):
-        # Apply the function to create the "Home Plate" column
-        df['Home Plate'] = df.apply(
+        # Apply the function to create the "homePlate" column
+        df['homePlate'] = df.apply(
             lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'],
                                                          row['yCordAdjusted']) else 'outside', axis=1)
         df['side'] = df['yCordAdjusted'].apply(
