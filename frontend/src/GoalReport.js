@@ -100,7 +100,7 @@ const GoalReport = ({ goalieID }) => {
     },
     series: [
       {
-        name: 'Stick',
+        name: 'Goal',
         data: data1.map(point => ({
           x: point.x,
           y: point.y,
