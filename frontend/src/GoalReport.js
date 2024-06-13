@@ -506,52 +506,116 @@ const GoalReport = ({ goalieID }) => {
     }
   };
 
-  return (
-    <div>
-     <h2>Goals Scored on Selected Goalie</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+   return (
         <div>
-          <h3>Selected Goalie</h3>
-          <div>
-            <p>Head On: {goalieReport && goalieReport.goals && goalieReport.goals.side_dist_goals && goalieReport.goals.side_dist_goals['Head On'].toFixed(2)}%</p>
-            <p>Stick: {goalieReport && goalieReport.goals && goalieReport.goals.side_dist_goals && goalieReport.goals.side_dist_goals['Stick'].toFixed(2)}%</p>
-            <p>Glove: {goalieReport && goalieReport.goals && goalieReport.goals.side_dist_goals && goalieReport.goals.side_dist_goals['Glove'].toFixed(2)}%</p>
-          </div>
+            <h2>Goals Scored on Selected Goalie</h2>
+            <h3>Shot Charts</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div style={{ gridColumn: '1 / 2' }}>
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={plainScatter}
+                        containerProps={{ style: { width: '100%', height: '100%' } }}
+                    />
+                </div>
+                <div style={{ gridColumn: '2 / 3' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <h4>Selected Goalie</h4>
+                            <p>Events: {goalieReport?.summary?.['EVENTS']?.toFixed(2)}</p>
+                            <p>Shots Missed: {goalieReport?.summary?.['SHOT']?.toFixed(2)}</p>
+                            <p>Saves: {goalieReport?.summary?.['SHOT']?.toFixed(2)}</p>
+                            <p>Goals: {goalieReport?.summary?.['GOAL']?.toFixed(2)}</p>
+                        </div>
+                        <div>
+                            <h4>Average Goalie</h4>
+                            <p>Events: {averageGoalie?.summary?.['EVENTS']?.toFixed(2)}</p>
+                            <p>Shots Missed: {averageGoalie?.summary?.['SHOT']?.toFixed(2)}</p>
+                            <p>Saves: {averageGoalie?.summary?.['SHOT']?.toFixed(2)}</p>
+                            <p>Goals: {averageGoalie?.summary?.['GOAL']?.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ gridColumn: '1 / 2' }}>
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={sideScatter}
+                        containerProps={{ style: { width: '100%', height: '100%' } }}
+                    />
+                </div>
+                <div style={{ gridColumn: '2 / 3' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <h4>Selected Goalie</h4>
+                            <p>Head On: {goalieReport?.goals?.side_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {goalieReport?.goals?.side_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {goalieReport?.goals?.side_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                        </div>
+                        <div>
+                            <h4>Average Goalie</h4>
+                            <p>Head On: {averageGoalie?.goals?.side_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {averageGoalie?.goals?.side_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {averageGoalie?.goals?.side_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ gridColumn: '1 / 2' }}>
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={homePlateScatter}
+                        containerProps={{ style: { width: '100%', height: '100%' } }}
+                    />
+                </div>
+                <div style={{ gridColumn: '2 / 3' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <h4>Selected Goalie</h4>
+                            <p>Inside: {goalieReport?.goals?.plate_dist_goals?.['inside']?.toFixed(2)}%</p>
+                            <p>Outside: {goalieReport?.goals?.plate_dist_goals?.['outside']?.toFixed(2)}%</p>
+                        </div>
+                        <div>
+                            <h4>Average Goalie</h4>
+                            <p>Inside: {averageGoalie?.goals?.plate_dist_goals?.['inside']?.toFixed(2)}%</p>
+                            <p>Outside: {averageGoalie?.goals?.plate_dist_goals?.['outside']?.toFixed(2)}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ gridColumn: '1 / 2' }}>
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={allScatter}
+                        containerProps={{ style: { width: '100%', height: '100%' } }}
+                    />
+                </div>
+                <div style={{ gridColumn: '2 / 3' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <h4>Selected Goalie</h4>
+                            <h5>Inside the home plate</h5>
+                            <p>Head On: {goalieReport?.goals?.inside_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {goalieReport?.goals?.inside_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {goalieReport?.goals?.inside_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                            <h5>Outside of the home plate</h5>
+                            <p>Head On: {goalieReport?.goals?.outside_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {goalieReport?.goals?.outside_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {goalieReport?.goals?.outside_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                        </div>
+                        <div>
+                            <h4>Average Goalie</h4>
+                            <h5>Inside the home plate</h5>
+                            <p>Head On: {averageGoalie?.goals?.inside_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {averageGoalie?.goals?.inside_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {averageGoalie?.goals?.inside_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                            <h5>Outside of the home plate</h5>
+                            <p>Head On: {averageGoalie?.goals?.outside_dist_goals?.['Head On']?.toFixed(2)}%</p>
+                            <p>Stick: {averageGoalie?.goals?.outside_dist_goals?.['Stick']?.toFixed(2)}%</p>
+                            <p>Glove: {averageGoalie?.goals?.outside_dist_goals?.['Glove']?.toFixed(2)}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-          <h3>Average Goalie</h3>
-          <div>
-            <p>Head On: {averageGoalie && averageGoalie.goals && averageGoalie.goals.side_dist_goals && averageGoalie.goals.side_dist_goals['Head On'].toFixed(2)}%</p>
-            <p>Stick: {averageGoalie && averageGoalie.goals && averageGoalie.goals.side_dist_goals && averageGoalie.goals.side_dist_goals['Stick'].toFixed(2)}%</p>
-            <p>Glove: {averageGoalie && averageGoalie.goals && averageGoalie.goals.side_dist_goals && averageGoalie.goals.side_dist_goals['Glove'].toFixed(2)}%</p>
-          </div>
-        </div>
-      </div>
-      <h3>Shot Charts</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={plainScatter}
-          containerProps={{ style: { width: '100%', height: '100%' } }}
-        />
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={sideScatter}
-          containerProps={{ style: { width: '100%', height: '100%' } }}
-        />
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={homePlateScatter}
-          containerProps={{ style: { width: '100%', height: '100%' } }}
-        />
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={allScatter}
-          containerProps={{ style: { width: '100%', height: '100%' } }}
-        />
-      </div>
-    </div>
-  );
+    );
 };
 
 export default GoalReport;

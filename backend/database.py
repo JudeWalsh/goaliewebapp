@@ -124,6 +124,7 @@ class Database:
         return self.house.contains(point)
 
     def goalie_report(self, goalieID, season=2022):
+        summary = {}
         goals_report = {}
         saves_report = {}
         shots_report = {}
@@ -132,6 +133,10 @@ class Database:
 
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
+
+        value_counts_dict = df['event'].value_counts().to_dict()
+        value_counts_dict['EVENTS'] = len(df)
+        self.goalie['summary'] = value_counts_dict
 
         # Apply the function to create the "Home Plate" column
         df['homePlate'] = df.apply(
@@ -242,6 +247,7 @@ class Database:
         self.goalie['shots'] = shots_report
 
     def average_goalie_report(self, season=2022):
+        summary = {}
         goals_report = {}
         saves_report = {}
         shots_report = {}
@@ -250,6 +256,21 @@ class Database:
 
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
+        df_filtered = df.groupby('goalieIdForShot').filter(lambda x: len(x) >= 702)
+        num_goalies = len(df_filtered['goalieIdForShot'].unique())
+        summary['EVENTS'] = len(df_filtered) / num_goalies
+
+        summary['SHOT'] = np.mean(df_filtered[df_filtered['event'] == 'SHOT']['goalieIdForShot'].value_counts())
+        summary['MISS'] = np.mean(df_filtered[df_filtered['event'] == 'MISS']['goalieIdForShot'].value_counts())
+        summary['GOAL'] = np.mean(df_filtered[df_filtered['event'] == 'GOAL']['goalieIdForShot'].value_counts())
+
+        summary['STD_EVENTS'] = df_filtered['goalieIdForShot'].value_counts().std()
+        summary['STD_SHOT'] = np.std(df_filtered[df_filtered['event'] == 'SHOT']['goalieIdForShot'].value_counts())
+        summary['STD_MISS'] = np.std(df_filtered[df_filtered['event'] == 'MISS']['goalieIdForShot'].value_counts())
+        summary['STD_GOAL'] = np.std(df_filtered[df_filtered['event'] == 'GOAL']['goalieIdForShot'].value_counts())
+
+        self.average_goalie['summary'] = summary
+
 
         polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
         polygon = Polygon(polygon_points)
