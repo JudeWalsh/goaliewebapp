@@ -9,7 +9,9 @@ HighchartsHeatmap(Highcharts);
 const ShotReport = ({ goalieID }) => {
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
-  const canvasRef = useRef(null);
+  const canvasRef1 = useRef(null);
+  const canvasRef2 = useRef(null);
+  const canvasRef3 = useRef(null);
 
   // Fetch the report data
   useEffect(() => {
@@ -27,19 +29,8 @@ const ShotReport = ({ goalieID }) => {
       .catch(error => console.error('Error fetching report data:', error));
   }, []);
 
-  // Drawing polygon on the canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  const drawPolygon = (canvas, polygonPoints = [], horizontalLines = []) => {
     const ctx = canvas.getContext('2d');
-
-    const polygon_points = [
-      [58.5, 24],
-      [58.5, -16],
-      [72, -16],
-      [90, -6],
-      [90, 14],
-      [72, 24]
-    ];
 
     // Scale and translate coordinates to fit the canvas
     const scaleX = canvas.width / 100;
@@ -47,22 +38,84 @@ const ShotReport = ({ goalieID }) => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
 
-    // Draw polygon
-    ctx.beginPath();
-    polygon_points.forEach(([x, y], index) => {
-      const canvasX = x * scaleX;
-      const canvasY = canvas.height / 2 - y * scaleY;
-      if (index === 0) {
-        ctx.moveTo(canvasX, canvasY);
-      } else {
-        ctx.lineTo(canvasX, canvasY);
-      }
+    // Draw polygon if polygonPoints are provided
+    if (polygonPoints.length > 0) {
+      ctx.beginPath();
+      polygonPoints.forEach(([x, y], index) => {
+        const canvasX = x * scaleX;
+        const canvasY = canvas.height / 2 - y * scaleY;
+        if (index === 0) {
+          ctx.moveTo(canvasX, canvasY);
+        } else {
+          ctx.lineTo(canvasX, canvasY);
+        }
+      });
+      ctx.closePath();
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    horizontalLines.forEach(([yStart, yEnd]) => {
+      const canvasYStart = canvas.height / 2 - yStart * scaleY;
+      const canvasYEnd = canvas.height / 2 - yEnd * scaleY;
+      ctx.beginPath();
+      ctx.moveTo(0, canvasYStart);
+      ctx.lineTo(canvas.width, canvasYStart);
+      ctx.moveTo(0, canvasYEnd);
+      ctx.lineTo(canvas.width, canvasYEnd);
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     });
-    ctx.closePath();
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+  };
+
+  // Define horizontal lines for the first canvas
+  const horizontalLines1 = [
+    [13.5, 13.5], // First horizontal line (y = -10)
+    [7, 7]   // Second horizontal line (y = 10)
+  ];
+
+  // Define different sets of polygon points for other canvases
+  const polygonPoints2 = [
+      [58.5, 27],
+      [58.5, -7],
+      [72, -7],
+      [90, 1.5],
+      [90, 18.5],
+      [72, 27]
+    ];
+
+  const polygonPoints3 = [
+      [58.5, 27],
+      [58.5, -7],
+      [72, -7],
+      [90, 1.5],
+      [90, 18.5],
+      [72, 27]
+    ];
+
+  // Drawing horizontal lines on the first canvas
+  useEffect(() => {
+    if (canvasRef1.current) {
+      drawPolygon(canvasRef1.current, [], horizontalLines1);
+    }
   }, []);
+
+  // Drawing polygons on the second and third canvases
+  useEffect(() => {
+    if (canvasRef2.current) {
+      drawPolygon(canvasRef2.current, polygonPoints2);
+    }
+  }, [polygonPoints2]);
+
+  useEffect(() => {
+    if (canvasRef3.current) {
+      drawPolygon(canvasRef3.current, polygonPoints3);
+    }
+  }, [polygonPoints3]);
+
 
   const createPieOptions = (percent) => ({
     chart: {
@@ -130,82 +183,88 @@ const ShotReport = ({ goalieID }) => {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
       <div style={{ position: 'relative', width: '500px', height: '500px' }}>
-        <img
-          src="moneypuckrink half.jpg"
-          alt="Background"
-          style={{ width: '90%', height: '90%', marginLeft: '10%' }}
-        />
-        <canvas
-          ref={canvasRef}
-          width="500"
-          height="500"
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        />
-        <div style={{ position: 'absolute', top: '500px', left: '290px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={inside} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Inside</div>
+        <div style={{ position: 'relative'}}>
+          <img
+            src="moneypuckrink half.jpg"
+            alt="Background"
+            style={{ width: '90%', height: '90%', marginLeft: '10%', zIndex: -1 }}
+          />
+          <canvas
+            ref={canvasRef1}
+            width="500"
+            height="500"
+            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+          />
+          <div style={{ position: 'absolute', top: '-130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={Glove} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Glove</div>
+          </div>
+          <div style={{ position: 'absolute', top: '100px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={Stick} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Stick</div>
+          </div>
+          <div style={{ position: 'absolute', top: '0px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={RR} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Royal Road</div>
+          </div>
         </div>
-        <div style={{ position: 'absolute', top: '500px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={outside} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Outside</div>
+        <div style={{ position: 'relative'}}>
+          <img
+            src="moneypuckrink half.jpg"
+            alt="Background"
+            style={{ width: '90%', height: '90%', marginLeft: '10%', zIndex: -1 }}
+          />
+          <canvas
+            ref={canvasRef2}
+            width="500"
+            height="500"
+            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+          />
+          <div style={{ position: 'absolute', top: '0px', left: '290px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={inside} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside</div>
+          </div>
+          <div style={{ position: 'absolute', top: '0px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={outside} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside</div>
+          </div>
         </div>
-        <img
-          src="moneypuckrink half.jpg"
-          alt="Background"
-          style={{ width: '90%', height: '90%', marginLeft: '10%' }}
-        />
-        <canvas
-          ref={canvasRef}
-          width="500"
-          height="500"
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        />
-        <div style={{ position: 'absolute', top: '-130px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={Glove} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Glove</div>
-        </div>
-        <div style={{ position: 'absolute', top: '190px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={Stick} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Stick</div>
-        </div>
-        <div style={{ position: 'absolute', top: '30px', left: '290px', width: '130px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={RR} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Royal Road</div>
-        </div>
-        <img
-          src="moneypuckrink half.jpg"
-          alt="Background"
-          style={{ width: '90%', height: '90%', marginLeft: '10%' }}
-        />
-        <canvas
-          ref={canvasRef}
-          width="500"
-          height="500"
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        />
-        <div style={{ position: 'absolute', top: '775px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={outsideStick} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Outside Stick</div>
-        </div>
-        <div style={{ position: 'absolute', top: '1095px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={outsideGlove} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Outside Glove</div>
-        </div>
-        <div style={{ position: 'absolute', top: '995px', left: '290px', width: '130px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={insideGlove} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Inside Glove</div>
-        </div>
-        <div style={{ position: 'absolute', top: '885px', left: '290px', width: '130px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={insideStick} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Inside Stick</div>
-        </div>
-        <div style={{ position: 'absolute', top: '935px', left: '375px', width: '120px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={insideRR} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Inside RR</div>
-        </div>
-        <div style={{ position: 'absolute', top: '935px', left: '150px', width: '150px', height: '150px' }}>
-          <HighchartsReact highcharts={Highcharts} options={outsideRR} />
-          <div style={{ textAlign: 'center', marginTop: '-150px' }}>Outside RR</div>
+        <div style={{ position: 'relative'}}>
+          <img
+            src="moneypuckrink half.jpg"
+            alt="Background"
+            style={{ width: '90%', height: '90%', marginLeft: '10%', zIndex: -1 }}
+          />
+          <canvas
+            ref={canvasRef3}
+            width="500"
+            height="500"
+            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+          />
+          <div style={{ position: 'absolute', top: '-130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={outsideStick} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside Stick</div>
+          </div>
+          <div style={{ position: 'absolute', top: '130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={outsideGlove} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside Glove</div>
+          </div>
+          <div style={{ position: 'absolute', top: '60px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={insideGlove} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside Glove</div>
+          </div>
+          <div style={{ position: 'absolute', top: '-60px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={insideStick} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside Stick</div>
+          </div>
+          <div style={{ position: 'absolute', top: '0px', left: '375px', width: '120px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={insideRR} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside RR</div>
+          </div>
+          <div style={{ position: 'absolute', top: '0px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+            <HighchartsReact highcharts={Highcharts} options={outsideRR} />
+            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside RR</div>
+          </div>
         </div>
       </div>
       <div>
