@@ -56,15 +56,15 @@ const ShotReport = ({ goalieID }) => {
       ctx.stroke();
     }
 
-    // Draw horizontal lines
-    horizontalLines.forEach(([yStart, yEnd]) => {
-      const canvasYStart = canvas.height / 2 - yStart * scaleY;
-      const canvasYEnd = canvas.height / 2 - yEnd * scaleY;
+    // Draw horizontal lines with a fixed length
+    const lineLength = 400;
+    horizontalLines.forEach(([y]) => {
+      const canvasY = canvas.height / 2 - y * scaleY;
+
+      // Drawing the lines at a fixed length from the center of the canvas
       ctx.beginPath();
-      ctx.moveTo(0, canvasYStart);
-      ctx.lineTo(canvas.width, canvasYStart);
-      ctx.moveTo(0, canvasYEnd);
-      ctx.lineTo(canvas.width, canvasYEnd);
+      ctx.moveTo(canvas.width / 2 - lineLength / 2, canvasY);
+      ctx.lineTo(canvas.width / 2 + lineLength / 2, canvasY);
       ctx.strokeStyle = 'black';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -112,7 +112,7 @@ const ShotReport = ({ goalieID }) => {
 
   useEffect(() => {
     if (canvasRef3.current) {
-      drawPolygon(canvasRef3.current, polygonPoints3);
+      drawPolygon(canvasRef3.current, polygonPoints3, horizontalLines1);
     }
   }, [polygonPoints3]);
 
