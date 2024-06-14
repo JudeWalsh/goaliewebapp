@@ -256,7 +256,7 @@ class Database:
 
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
-        df_filtered = df.groupby('goalieIdForShot').filter(lambda x: len(x) >= 702)
+        df_filtered = df.groupby('goalieIdForShot').filter(lambda x: len(x) >= 0)
         num_goalies = len(df_filtered['goalieIdForShot'].unique())
         summary['EVENTS'] = len(df_filtered) / num_goalies
 

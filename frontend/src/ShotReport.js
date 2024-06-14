@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
+import './ShotReport.css';
 
 // Initialize the heatmap module
 HighchartsHeatmap(Highcharts);
@@ -57,14 +58,14 @@ const ShotReport = ({ goalieID }) => {
     }
 
     // Draw horizontal lines with a fixed length
-    const lineLength = 400;
+    const lineLength = 560;
     horizontalLines.forEach(([y]) => {
       const canvasY = canvas.height / 2 - y * scaleY;
 
       // Drawing the lines at a fixed length from the center of the canvas
       ctx.beginPath();
-      ctx.moveTo(canvas.width / 2 - lineLength / 2, canvasY);
-      ctx.lineTo(canvas.width / 2 + lineLength / 2, canvasY);
+      ctx.moveTo(canvas.width / 2 - lineLength / 2 - 15, canvasY);
+      ctx.lineTo(canvas.width / 2 + lineLength / 2 + 103, canvasY);
       ctx.strokeStyle = 'black';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -73,27 +74,27 @@ const ShotReport = ({ goalieID }) => {
 
   // Define horizontal lines for the first canvas
   const horizontalLines1 = [
-    [13.5, 13.5], // First horizontal line (y = -10)
-    [7, 7]   // Second horizontal line (y = 10)
+    [0, 0],
+    [5, 5]
   ];
 
   // Define different sets of polygon points for other canvases
   const polygonPoints2 = [
-      [58.5, 27],
-      [58.5, -7],
-      [72, -7],
-      [90, 1.5],
-      [90, 18.5],
-      [72, 27]
+      [58, 21],
+      [58, -17],
+      [71, -17],
+      [88, -7],
+      [88, 12],
+      [71, 21]
     ];
 
   const polygonPoints3 = [
-      [58.5, 27],
-      [58.5, -7],
-      [72, -7],
-      [90, 1.5],
-      [90, 18.5],
-      [72, 27]
+      [58, 21],
+      [58, -17],
+      [71, -17],
+      [88, -7],
+      [88, 12],
+      [71, 21]
     ];
 
   // Drawing horizontal lines on the first canvas
@@ -141,7 +142,8 @@ const ShotReport = ({ goalieID }) => {
         distance: -30, // Positioning the label inside the slice
         style: {
           color: 'white',
-          textOutline: 'none'
+          textOutline: 'black',
+          fontSize: '14px'
         }
       }
     }],
@@ -181,9 +183,11 @@ const ShotReport = ({ goalieID }) => {
 
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-      <div style={{ position: 'relative', width: '500px', height: '500px' }}>
-        <div style={{ position: 'relative'}}>
+    <div className="shot-report">
+      <h2>Save Percentages by Area</h2>
+      <h3>Shot Charts</h3>
+      <div className="grid-container">
+        <div className="grid-item" style={{ position: 'relative'}}>
           <img
             src="moneypuckrink half.jpg"
             alt="Background"
@@ -191,24 +195,57 @@ const ShotReport = ({ goalieID }) => {
           />
           <canvas
             ref={canvasRef1}
-            width="500"
-            height="500"
-            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+            width="775"
+            height="775"
+            style={{ position: 'absolute', top: -10, left: 0, zIndex: 0,
+            width: '100%', height: '100%'}}
           />
-          <div style={{ position: 'absolute', top: '-130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '-10%', left: '40%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={Glove} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Glove</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Glove</div>
           </div>
-          <div style={{ position: 'absolute', top: '100px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '35%', left: '40%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={Stick} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Stick</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Stick</div>
           </div>
-          <div style={{ position: 'absolute', top: '0px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '15%', left: '60%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={RR} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Royal Road</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Royal Road</div>
           </div>
         </div>
-        <div style={{ position: 'relative'}}>
+        <div className="grid-item">
+          <div className="grid-inner">
+            <div className="data-section">
+              <h4>Selected Goalie</h4>
+              <p>Glove Side: {goalieReport?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Stick Side: {goalieReport?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Royal Road: {goalieReport?.shots?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            </div>
+            <div className="data-section">
+              <h4>Average Goalie</h4>
+              <p>GLove Side: {averageGoalie?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Stick Side: {averageGoalie?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Royal Road: {averageGoalie?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            </div>
+            <div className="data-section">
+              <p>
+                Save percentages by side of the ice
+              </p>
+            </div>
+            <div className="data-section">
+              <p>
+                Save percentage is percentage of shots out of all shots and goals
+              </p>
+            </div>
+            <div className={"data-section"}>
+              <p>
+                Higher percentage than the average goalie is better as the selected goalie
+                is saving shots more often in that area
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="grid-item" style={{ position: 'relative'}}>
           <img
             src="moneypuckrink half.jpg"
             alt="Background"
@@ -216,20 +253,40 @@ const ShotReport = ({ goalieID }) => {
           />
           <canvas
             ref={canvasRef2}
-            width="500"
-            height="500"
-            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+            width="775"
+            height="775"
+            style={{ position: 'absolute', top: -10, left: 0, zIndex: 0,
+            width: '100%', height: '100%'}}
           />
-          <div style={{ position: 'absolute', top: '0px', left: '290px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '15%', left: '60%', width: '25%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={inside} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside</div>
+            <div style={{ textAlign: 'center', marginTop: '-60%', zIndex: 1 }}>Inside</div>
           </div>
-          <div style={{ position: 'absolute', top: '0px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '15%', left: '35%', width: '25%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={outside} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside</div>
+            <div style={{ textAlign: 'center', marginTop: '-60%', zIndex: 1 }}>Outside</div>
           </div>
         </div>
-        <div style={{ position: 'relative'}}>
+        <div className="grid-item">
+          <div className="grid-inner">
+            <div className="data-section">
+              <h4>Selected Goalie</h4>
+              <p>Inside of the Plate: {goalieReport?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside of the Plate: {goalieReport?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            </div>
+            <div className="data-section">
+              <h4>Average Goalie</h4>
+              <p>Inside of the Plate: {averageGoalie?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside of the Plate: {averageGoalie?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            </div>
+            <div className="data-section">
+              <p>
+                Save percentages by the inside or outside of the home plate
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="grid-item" style={{ position: 'relative'}}>
           <img
             src="moneypuckrink half.jpg"
             alt="Background"
@@ -237,75 +294,60 @@ const ShotReport = ({ goalieID }) => {
           />
           <canvas
             ref={canvasRef3}
-            width="500"
-            height="500"
-            style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+            width="775"
+            height="775"
+            style={{ position: 'absolute', top: -10, left: 0, zIndex: 0,
+            width: '100%', height: '100%'}}
           />
-          <div style={{ position: 'absolute', top: '-130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '-16%', left: '32%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={outsideStick} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside Stick</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Outside Stick</div>
           </div>
-          <div style={{ position: 'absolute', top: '130px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '45%', left: '32%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={outsideGlove} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside Glove</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Outside Glove</div>
           </div>
-          <div style={{ position: 'absolute', top: '60px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '27%', left: '60%', width: '20%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={insideGlove} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside Glove</div>
+            <div style={{ textAlign: 'center', marginTop: '-90%', zIndex: 1 }}>Inside Glove</div>
           </div>
-          <div style={{ position: 'absolute', top: '-60px', left: '290px', width: '130px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '3%', left: '60%', width: '20%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={insideStick} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside Stick</div>
+            <div style={{ textAlign: 'center', marginTop: '-90%', zIndex: 1 }}>Inside Stick</div>
           </div>
-          <div style={{ position: 'absolute', top: '0px', left: '375px', width: '120px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '13%', left: '75%', width: '20%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={insideRR} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Inside RR</div>
+            <div style={{ textAlign: 'center', marginTop: '-90%', zIndex: 1 }}>Inside RR</div>
           </div>
-          <div style={{ position: 'absolute', top: '0px', left: '150px', width: '150px', height: '150px', zIndex: 1 }}>
+          <div style={{ position: 'absolute', top: '13%', left: '32%', width: '23%', zIndex: 1 }}>
             <HighchartsReact highcharts={Highcharts} options={outsideRR} />
-            <div style={{ textAlign: 'center', marginTop: '-150px', zIndex: 1 }}>Outside RR</div>
+            <div style={{ textAlign: 'center', marginTop: '-70%', zIndex: 1 }}>Outside RR</div>
           </div>
         </div>
-      </div>
-      <div>
-        <h2>Save Percentages by Area</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <h3>Selected Goalie</h3>
-            <div>
-              <h4>By Goalie's Side</h4>
-              <p>Head On: {goalieReport?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Head On: {goalieReport?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Head On: {goalieReport?.shots?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <h4>By Home Plate</h4>
-              <p>Inside: {goalieReport?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside: {goalieReport?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <h4>By the Six Areas</h4>
-              <p>Outside Glove: {goalieReport?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove: {goalieReport?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick: {goalieReport?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Stick: {goalieReport?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+        <div className="grid-item">
+          <div className="grid-inner">
+            <div className="data-section">
+              <h4>Selected Goalie</h4>
+              <p>Inside Stick Side: {goalieReport?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Stick Side: {goalieReport?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Glove Side: {goalieReport?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Glove Side Side: {goalieReport?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Outside Royal Road: {goalieReport?.shots?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Inside Royal Road: {goalieReport?.shots?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
-          </div>
-          <div>
-            <h3>Average Goalie</h3>
-            <div>
-              <h4>By Goalie's Side</h4>
-              <p>Head On: {averageGoalie?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Head On: {averageGoalie?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Head On: {averageGoalie?.shots?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <h4>By Home Plate</h4>
-              <p>Inside: {averageGoalie?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside: {averageGoalie?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <h4>By the Six Areas</h4>
-              <p>Outside Glove: {averageGoalie?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove: {averageGoalie?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick: {averageGoalie?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Stick: {averageGoalie?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            <div className="data-section">
+              <h4>Average Goalie</h4>
+              <p>Inside Stick Side: {averageGoalie?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Stick Side: {averageGoalie?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Glove Side: {averageGoalie?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Glove Side Side: {averageGoalie?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Outside Royal Road: {averageGoalie?.shots?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Inside Royal Road: {averageGoalie?.shots?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+            </div>
+            <div className="data-section">
+              <p>
+                Save percentages by the six areas defined in the report
+              </p>
             </div>
           </div>
         </div>

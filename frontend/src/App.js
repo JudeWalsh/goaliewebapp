@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GoalReport from './GoalReport';
 import SaveReport from "./SaveReport";
 import ShotReport from "./ShotReport";
+import './App.css';
 
 function App() {
   const [teamOptions, setTeamOptions] = useState([]);
@@ -56,29 +57,29 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Team and Goalie Dropdown</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="team">Select a Team:</label>
-          <select id="team" value={selectedTeam} onChange={handleTeamChange}>
+      <h1 className="header">Select a Goalie</h1>
+      <form className="form" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="team" className="label">Select a Team:</label>
+          <select id="team" className="select" value={selectedTeam} onChange={handleTeamChange}>
             <option value="">Select a Team</option>
             {teamOptions.map((team, index) => (
-              <option key={index} value={team}>{team}</option>
+              <option key={index} value={team} className="option">{team}</option>
             ))}
           </select>
         </div>
         {selectedTeam && (
-          <div>
-            <label htmlFor="goalie">Select a Goalie:</label>
-            <select id="goalie" value={selectedGoalie} onChange={handleGoalieChange}>
+          <div className="form-group">
+            <label htmlFor="goalie" className="label">Select a Goalie:</label>
+            <select id="goalie" className="select" value={selectedGoalie} onChange={handleGoalieChange}>
               <option value="">Select a Goalie</option>
               {goalieOptions.map((goalie) => (
-                <option key={goalie.id} value={goalie.id}>{goalie.firstName} {goalie.lastName}</option>
+                <option key={goalie.id} value={goalie.id} className="option">{goalie.firstName} {goalie.lastName}</option>
               ))}
             </select>
           </div>
         )}
-        <button type="submit">Submit</button>
+        <button type="submit" className="submit-button">Submit</button>
       </form>
       {reportData && <GoalReport goalieID={reportData} />}
       {reportData && <SaveReport goalieID={reportData} />}

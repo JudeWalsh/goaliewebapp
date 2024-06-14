@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.20",
     "@nivo/scatterplot": "^0.87.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -11,6 +15,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "echarts": "^5.5.0",
     "echarts-for-react": "^3.0.2",
+    "framer-motion": "^11.2.10",
     "heatmap.js": "^2.0.5",
     "highcharts": "^11.4.3",
     "highcharts-more": "^0.1.7",
