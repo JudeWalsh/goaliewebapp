@@ -72,33 +72,12 @@ const ShotReport = ({ goalieID }) => {
     });
   };
 
-  // Define horizontal lines for the first canvas
-  const horizontalLines1 = [
-    [0, 0],
-    [5, 5]
-  ];
-
-  // Define different sets of polygon points for other canvases
-  const polygonPoints2 = [
-      [58, 21],
-      [58, -17],
-      [71, -17],
-      [88, -7],
-      [88, 12],
-      [71, 21]
-    ];
-
-  const polygonPoints3 = [
-      [58, 21],
-      [58, -17],
-      [71, -17],
-      [88, -7],
-      [88, 12],
-      [71, 21]
-    ];
-
   // Drawing horizontal lines on the first canvas
   useEffect(() => {
+    const horizontalLines1 = [
+      [0, 0],
+      [5, 5]
+    ];
     if (canvasRef1.current) {
       drawPolygon(canvasRef1.current, [], horizontalLines1);
     }
@@ -107,15 +86,35 @@ const ShotReport = ({ goalieID }) => {
   // Drawing polygons on the second and third canvases
   useEffect(() => {
     if (canvasRef2.current) {
+      const polygonPoints2 = [
+        [58, 21],
+        [58, -17],
+        [71, -17],
+        [88, -7],
+        [88, 12],
+        [71, 21]
+      ];
       drawPolygon(canvasRef2.current, polygonPoints2);
     }
-  }, [polygonPoints2]);
+  }, []);
 
   useEffect(() => {
+    const horizontalLines1 = [
+      [0, 0],
+      [5, 5]
+    ];
+    const polygonPoints3 = [
+      [58, 21],
+      [58, -17],
+      [71, -17],
+      [88, -7],
+      [88, 12],
+      [71, 21]
+    ];
     if (canvasRef3.current) {
       drawPolygon(canvasRef3.current, polygonPoints3, horizontalLines1);
     }
-  }, [polygonPoints3]);
+  }, []);
 
 
   const createPieOptions = (percent) => ({
