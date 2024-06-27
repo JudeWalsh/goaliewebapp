@@ -52,7 +52,6 @@ class Database:
         # self.update_goalies()
         self.goalie = {}
         self.average_goalie = {}
-        self.average_goalie_report()
 
     def get_Goalies(self):
         self.teamsGoalies = []
@@ -123,25 +122,28 @@ class Database:
         point = Point(x, y)
         return self.house.contains(point)
 
-    def goalie_report(self, goalieID, season=2022):
-        summary = {}
+    def goal_report(self, goalieID, start_year=2022, end_year=2022):
         goals_report = {}
-        saves_report = {}
-        shots_report = {}
-        query = f"SELECT * FROM shots WHERE goalieIdForShot = ? AND season >= {season}"
-        df = pd.read_sql_query(query, self.conn, params=(goalieID,))
+        query = f"SELECT * FROM shots " \
+                f"WHERE goalieIdForShot = ? " \
+                f"AND season >= ? " \
+                f"AND season <= ?"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
 
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
 
+        '''
+        SUMMARY REPORT
+        '''
         value_counts_dict = df['event'].value_counts().to_dict()
         value_counts_dict['EVENTS'] = len(df)
-        self.goalie['summary'] = value_counts_dict
+        goals_report['summary'] = value_counts_dict
 
         # Apply the function to create the "Home Plate" column
         df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
-
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
         '''
         DIVIDE DATA BY AREA FOR GOALS SCORED
         '''
@@ -169,11 +171,26 @@ class Database:
 
         side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
         goals_report['outside_dist_goals'] = side_distribution
-        self.goalie['goals'] = goals_report
+        return goals_report
 
+    def save_report(self, goalieID, start_year=2022, end_year=2022):
+        query = f"SELECT * FROM shots " \
+                f"WHERE goalieIdForShot = ? " \
+                f"AND season >= ? " \
+                f"AND season <= ?"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
+
+        # Drop columns with all NaN values
+        df = df.dropna(how='all', axis=1)
+
+        # Apply the function to create the "Home Plate" column
+        df['homePlate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
         '''
         DIVIDE DATA BY AREA FOR SHOTS SAVED
         '''
+        saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
 
         save_df['side'] = save_df['yCordAdjusted'].apply(
@@ -196,11 +213,26 @@ class Database:
 
         side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
         saves_report['outside_dist_saves'] = side_distribution
-        self.goalie['saves'] = saves_report
+        return saves_report
 
+    def shot_report(self, goalieID, start_year=2022, end_year=2022):
+        query = f"SELECT * FROM shots " \
+                f"WHERE goalieIdForShot = ? " \
+                f"AND season >= ? " \
+                f"AND season <= ?"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
+
+        # Drop columns with all NaN values
+        df = df.dropna(how='all', axis=1)
+
+        # Apply the function to create the "Home Plate" column
+        df['homePlate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
         '''
         DIVIDE DATA BY AREA FOR SHOTS ON GOAL, SAVES AND GOALS
         '''
+        shots_report = {}
         shots_df = df[df['event'] != 'MISS'].copy()
 
         shots_df['side'] = shots_df['yCordAdjusted'].apply(
@@ -244,17 +276,17 @@ class Database:
         shots_report['outside_RR_save_percent'] = outside_RR['event'].value_counts(normalize=True) * 100
         shots_report['inside_RR_save_percent'] = inside_RR['event'].value_counts(normalize=True) * 100
 
-        self.goalie['shots'] = shots_report
+        return shots_report
 
-    def average_goalie_report(self, season=2022):
-        summary = {}
-        goals_report = {}
-        saves_report = {}
-        shots_report = {}
-        query = f"SELECT * FROM shots WHERE season >= {season}"
+    def average_goal_report(self, start_year=2022, end_year=2022):
+        '''
+        DIVIDE DATA BY AREA FOR GOALS SCORED
+        '''
+        query = f"SELECT * FROM shots WHERE season >= {start_year} AND season <= {end_year}"
         df = pd.read_sql_query(query, self.conn)
+        goals_report = {}
+        summary = {}
 
-        # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
         df_filtered = df.groupby('goalieIdForShot').filter(lambda x: len(x) >= 0)
         num_goalies = len(df_filtered['goalieIdForShot'].unique())
@@ -269,19 +301,12 @@ class Database:
         summary['STD_MISS'] = np.std(df_filtered[df_filtered['event'] == 'MISS']['goalieIdForShot'].value_counts())
         summary['STD_GOAL'] = np.std(df_filtered[df_filtered['event'] == 'GOAL']['goalieIdForShot'].value_counts())
 
-        self.average_goalie['summary'] = summary
+        goals_report['summary'] = summary
 
-
-        polygon_points = [(54, 22), (54, -22), (69, -22), (89, -11), (89, 11), (69, 22)]
-        polygon = Polygon(polygon_points)
-
-        # Apply the function to create the "homePlate" column
         df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside', axis=1)
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
 
-        '''
-        DIVIDE DATA BY AREA FOR GOALS SCORED
-        '''
         # Filter rows for goals
         goals_df = df[df['event'] == 'GOAL'].copy()
 
@@ -306,11 +331,21 @@ class Database:
 
         side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
         goals_report['outside_dist_goals'] = side_distribution
-        self.average_goalie['goals'] = goals_report
+        return goals_report
 
+    def average_save_report(self, start_year=2022, end_year=2022):
         '''
         DIVIDE DATA BY AREA FOR SHOTS SAVED
         '''
+
+        query = f"SELECT * FROM shots WHERE season >= {start_year} AND season <= {end_year}"
+        df = pd.read_sql_query(query, self.conn)
+
+        df['homePlate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
+
+        saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
 
         save_df['side'] = save_df['yCordAdjusted'].apply(
@@ -333,11 +368,21 @@ class Database:
 
         side_distribution = outside_home_plate_df['side'].value_counts(normalize=True) * 100
         saves_report['outside_dist_saves'] = side_distribution
-        self.average_goalie['saves'] = saves_report
+        return saves_report
 
+    def average_shot_report(self, start_year=2022, end_year=2022):
         '''
         DIVIDE DATA BY AREA FOR SHOTS ON GOAL, SAVES AND GOALS
         '''
+
+        query = f"SELECT * FROM shots WHERE season >= {start_year} AND season <= {end_year}"
+        df = pd.read_sql_query(query, self.conn)
+
+        df['homePlate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'],
+                                                         row['yCordAdjusted']) else 'outside', axis=1)
+
+        shots_report = {}
         shots_df = df[df['event'] != 'MISS'].copy()
 
         shots_df['side'] = shots_df['yCordAdjusted'].apply(
@@ -381,7 +426,7 @@ class Database:
         shots_report['outside_RR_save_percent'] = outside_RR['event'].value_counts(normalize=True) * 100
         shots_report['inside_RR_save_percent'] = inside_RR['event'].value_counts(normalize=True) * 100
 
-        self.average_goalie['shots'] = shots_report
+        return shots_report
 
 
     def adjust_df(self, df):
@@ -393,33 +438,58 @@ class Database:
             lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
         return df
 
-    def goal_shot_cords(self, goalieID, season=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season FROM shots WHERE goalieIdForShot = ? AND event = 'GOAL' AND season >= {season};"
-        df = pd.read_sql_query(query, self.conn, params=(goalieID,))
+    def goal_shot_cords(self, goalieID, start_year=2022, end_year=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+                f"FROM shots " \
+                f"WHERE goalieIdForShot = ? " \
+                f"AND event = 'GOAL' " \
+                f"AND season >= ?" \
+                f"AND season <= ?;"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
         df = df.dropna(how='all', axis=1)
         df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
-    def all_goal_shot_cords(self, season=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE event = 'GOAL' AND season >= {season};"
-        df = pd.read_sql_query(query, self.conn)
+    def all_goal_shot_cords(self, start_year=2022, end_year=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+                f"FROM shots " \
+                f"WHERE event = 'GOAL' " \
+                f"AND season >= ?" \
+                f"AND season <= ?;"
+        df = pd.read_sql_query(query, self.conn, params=(start_year, end_year))
         df = df.dropna(how='all', axis=1)
         df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
-    def save_shot_cords(self, goalieID, season=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season FROM shots WHERE goalieIdForShot = ? AND event = 'SHOT' AND season >= {season};"
-        df = pd.read_sql_query(query, self.conn, params=(goalieID,))
+    def save_shot_cords(self, goalieID, start_year=2022, end_year=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+                f"FROM shots " \
+                f"WHERE goalieIdForShot = ? " \
+                f"AND event = 'SHOT' " \
+                f"AND season >= ? " \
+                f"AND season <= ?;"
+        df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
         df = df.dropna(how='all', axis=1)
-        df = self.adjust_df(df)
+        try:
+            df = self.adjust_df(df)
+        except Exception as e:
+            print("------------------ERROR------------")
+            print(df.head)
+            print(query)
+            print(str(e))
+            print("------------------ERROR------------")
         json_df = df.to_dict(orient='records')
         return json_df
 
-    def all_save_shot_cords(self, season=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted FROM shots WHERE event = 'SHOT' AND season >= {season};"
-        df = pd.read_sql_query(query, self.conn)
+    def all_save_shot_cords(self, start_year=2022, end_year=2022):
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+                f"FROM shots " \
+                f"WHERE event = 'SHOT' " \
+                f"AND season >= ?" \
+                f"AND season <= ?;"
+        df = pd.read_sql_query(query, self.conn, params=(start_year, end_year))
         df = df.dropna(how='all', axis=1)
         df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')

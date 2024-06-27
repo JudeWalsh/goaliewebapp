@@ -7,7 +7,7 @@ import './ShotReport.css';
 // Initialize the heatmap module
 HighchartsHeatmap(Highcharts);
 
-const ShotReport = ({ goalieID }) => {
+const ShotReport = ({ goalieID, startYear, endYear }) => {
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
   const canvasRef1 = useRef(null);
@@ -16,19 +16,19 @@ const ShotReport = ({ goalieID }) => {
 
   // Fetch the report data
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/goalreport/${goalieID}`)
+    fetch(`http://127.0.0.1:8000/shotreport/${goalieID}?startYear=${startYear}&endYear=${endYear}`)
       .then(response => response.json())
       .then(data => setGoalieReport(data))
       .catch(error => console.error('Error fetching report data:', error));
-  }, [goalieID]);
+  }, [goalieID, startYear, endYear]);
 
   // Fetch the report data for the average goalie
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/goalreport/all`)
+    fetch(`http://127.0.0.1:8000/shotreport/all?startYear=${startYear}&endYear=${endYear}`)
       .then(response => response.json())
       .then(data => setAverageGoalie(data))
       .catch(error => console.error('Error fetching report data:', error));
-  }, []);
+  }, [startYear, endYear]);
 
   const drawPolygon = (canvas, polygonPoints = [], horizontalLines = []) => {
     const ctx = canvas.getContext('2d');
@@ -164,21 +164,21 @@ const ShotReport = ({ goalieID }) => {
   });
 
   // Comment
-  const Glove = createPieOptions(goalieReport?.shots?.glove_save_percent?.['SHOT'] || 0);
-  const Stick = createPieOptions(goalieReport?.shots?.stick_save_percent?.['SHOT'] || 0);
-  const RR = createPieOptions(goalieReport?.shots?.RR_save_percent?.['SHOT'] || 0);
+  const Glove = createPieOptions(goalieReport?.glove_save_percent?.['SHOT'] || 0);
+  const Stick = createPieOptions(goalieReport?.stick_save_percent?.['SHOT'] || 0);
+  const RR = createPieOptions(goalieReport?.RR_save_percent?.['SHOT'] || 0);
 
   // Comment
-  const inside = createPieOptions(goalieReport?.shots?.inside_save_percent?.['SHOT'] || 0);
-  const outside = createPieOptions(goalieReport?.shots?.outside_save_percent?.['SHOT'] || 0);
+  const inside = createPieOptions(goalieReport?.inside_save_percent?.['SHOT'] || 0);
+  const outside = createPieOptions(goalieReport?.outside_save_percent?.['SHOT'] || 0);
 
   // Create pie chart options for each area using the goalieReport data
-  const outsideGlove = createPieOptions(goalieReport?.shots?.outside_glove_save_percent?.['SHOT'] || 0);
-  const insideGlove = createPieOptions(goalieReport?.shots?.inside_glove_save_percent?.['SHOT'] || 0);
-  const outsideStick = createPieOptions(goalieReport?.shots?.outside_stick_save_percent?.['SHOT'] || 0);
-  const insideStick = createPieOptions(goalieReport?.shots?.inside_stick_save_percent?.['SHOT'] || 0);
-  const outsideRR = createPieOptions(goalieReport?.shots?.outside_RR_save_percent?.['SHOT'] || 0);
-  const insideRR = createPieOptions(goalieReport?.shots?.inside_RR_save_percent?.['SHOT'] || 0);
+  const outsideGlove = createPieOptions(goalieReport?.outside_glove_save_percent?.['SHOT'] || 0);
+  const insideGlove = createPieOptions(goalieReport?.inside_glove_save_percent?.['SHOT'] || 0);
+  const outsideStick = createPieOptions(goalieReport?.outside_stick_save_percent?.['SHOT'] || 0);
+  const insideStick = createPieOptions(goalieReport?.inside_stick_save_percent?.['SHOT'] || 0);
+  const outsideRR = createPieOptions(goalieReport?.outside_RR_save_percent?.['SHOT'] || 0);
+  const insideRR = createPieOptions(goalieReport?.inside_RR_save_percent?.['SHOT'] || 0);
 
 
   return (
@@ -216,9 +216,9 @@ const ShotReport = ({ goalieID }) => {
           <div className="grid-inner">
             <div className="data-section">
               <h4>Selected Goalie</h4>
-              <p>Glove Side: {goalieReport?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Stick Side: {goalieReport?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Royal Road: {goalieReport?.shots?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Glove Side: {goalieReport?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Stick Side: {goalieReport?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Royal Road: {goalieReport?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
@@ -270,8 +270,8 @@ const ShotReport = ({ goalieID }) => {
           <div className="grid-inner">
             <div className="data-section">
               <h4>Selected Goalie</h4>
-              <p>Inside of the Plate: {goalieReport?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside of the Plate: {goalieReport?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside of the Plate: {goalieReport?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside of the Plate: {goalieReport?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
@@ -327,21 +327,21 @@ const ShotReport = ({ goalieID }) => {
           <div className="grid-inner">
             <div className="data-section">
               <h4>Selected Goalie</h4>
-              <p>Inside Stick Side: {goalieReport?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick Side: {goalieReport?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove Side: {goalieReport?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Glove Side Side: {goalieReport?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Royal Road: {goalieReport?.shots?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Royal Road: {goalieReport?.shots?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Stick Side: {goalieReport?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Stick Side: {goalieReport?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Glove Side: {goalieReport?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Glove Side Side: {goalieReport?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Royal Road: {goalieReport?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Royal Road: {goalieReport?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
-              <p>Inside Stick Side: {averageGoalie?.shots?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick Side: {averageGoalie?.shots?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove Side: {averageGoalie?.shots?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Glove Side Side: {averageGoalie?.shots?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Royal Road: {averageGoalie?.shots?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Royal Road: {averageGoalie?.shots?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Stick Side: {averageGoalie?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Stick Side: {averageGoalie?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Glove Side: {averageGoalie?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Glove Side Side: {averageGoalie?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside Royal Road: {averageGoalie?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside Royal Road: {averageGoalie?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <p>

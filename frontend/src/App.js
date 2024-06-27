@@ -9,6 +9,11 @@ function App() {
   const [goalieOptions, setGoalieOptions] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedGoalie, setSelectedGoalie] = useState('');
+  const currentYear = new Date().getFullYear();
+  const defaultStartYear = currentYear - 2; // Default start year is 5 years ago
+  const defaultEndYear = currentYear; // Default end year is the current year
+  const [startYear, setStartYear] = useState(defaultStartYear);
+  const [endYear, setEndYear] = useState(defaultEndYear);
   const [reportData, setReportData] = useState(null);
 
   // Fetch team names from the server
@@ -45,15 +50,31 @@ function App() {
     setSelectedGoalie(event.target.value);
   };
 
+  const handleStartYearChange = (event) => {
+    setStartYear(event.target.value);
+  };
+
+  const handleEndYearChange = (event) => {
+    setEndYear(event.target.value);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Selected goalie ID:', selectedGoalie);
     if (selectedGoalie) {
-        setReportData(selectedGoalie); // Pass the selectedGoalie ID
+      const reportParams = {
+        goalieID: selectedGoalie,
+        startYear,
+        endYear,
+      };
+      // Set the new report data
+      setReportData(reportParams)
     } else {
-        console.log('No goalie selected');
+      console.log('No goalie selected');
     }
-};
+  };
+
+  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i); // last 50 years
 
   return (
     <div className="App">
@@ -79,11 +100,31 @@ function App() {
             </select>
           </div>
         )}
+        <div className="form-group year-selectors">
+          <div>
+            <label htmlFor="startYear" className="label">Select Start Year:</label>
+            <select id="startYear" className="select" value={startYear} onChange={handleStartYearChange}>
+              <option value="">Select Start Year</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year} className="option">{year}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="endYear" className="label">Select End Year:</label>
+            <select id="endYear" className="select" value={endYear} onChange={handleEndYearChange}>
+              <option value="">Select End Year</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year} className="option">{year}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         <button type="submit" className="submit-button">Submit</button>
       </form>
-      {reportData && <GoalReport goalieID={reportData} />}
-      {reportData && <SaveReport goalieID={reportData} />}
-      {reportData && <ShotReport goalieID={reportData} />}
+      {reportData && <GoalReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData && <SaveReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData && <ShotReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
     </div>
   );
 }

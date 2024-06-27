@@ -9,7 +9,7 @@ import './SaveReport.css'
 HighchartsHeatmap(Highcharts);
 HighchartsAnnotations(Highcharts);
 
-const SaveReport = ({ goalieID }) => {
+const SaveReport = ({ goalieID, startYear, endYear }) => {
   const [data1, setData1] = useState([]);
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
@@ -24,7 +24,7 @@ const SaveReport = ({ goalieID }) => {
 
   // Fetch the report data
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/goalreport/${goalieID}`)
+    fetch(`http://127.0.0.1:8000/savereport/${goalieID}?startYear=${startYear}&endYear=${endYear}`)
       .then(response => response.json())
       .then(data => {
         setGoalieReport(data);
@@ -32,11 +32,11 @@ const SaveReport = ({ goalieID }) => {
       .catch(error => {
         console.error('Error fetching report data:', error);
       });
-  }, [goalieID]);
+  }, [goalieID, startYear, endYear]);
 
   // Fetch the report data for the average goalie
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/goalreport/all`)
+    fetch(`http://127.0.0.1:8000/savereport/all?startYear=${startYear}&endYear=${endYear}`)
       .then(response => response.json())
       .then(data => {
         setAverageGoalie(data);
@@ -44,11 +44,11 @@ const SaveReport = ({ goalieID }) => {
       .catch(error => {
         console.error('Error fetching report data:', error);
       });
-  }, []);
+  }, [startYear, endYear]);
 
   // Fetch the coordinates data for the first scatter plot
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/coordinates/saves/${goalieID}`)
+    fetch(`http://127.0.0.1:8000/coordinates/saves/${goalieID}?startYear=${startYear}&endYear=${endYear}`)
       .then(response => response.json())
       .then(data => {
         if (data) {
@@ -69,7 +69,7 @@ const SaveReport = ({ goalieID }) => {
       .catch(error => {
         console.error('Error fetching coordinates:', error);
       });
-  }, [goalieID]);
+  }, [goalieID, startYear, endYear]);
 
   const plainScatter = {
      chart: {
@@ -556,15 +556,15 @@ const SaveReport = ({ goalieID }) => {
           <div className="grid-inner">
             <div className="data-section">
               <h4>Selected Goalie</h4>
-              <p>Head On: {goalieReport?.saves?.side_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {goalieReport?.saves?.side_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {goalieReport?.saves?.side_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {goalieReport?.side_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {goalieReport?.side_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {goalieReport?.side_dist_saves?.['Glove']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
-              <p>Head On: {averageGoalie?.saves?.side_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {averageGoalie?.saves?.side_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {averageGoalie?.saves?.side_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {averageGoalie?.side_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {averageGoalie?.side_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {averageGoalie?.side_dist_saves?.['Glove']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <p>
@@ -585,13 +585,13 @@ const SaveReport = ({ goalieID }) => {
           <div className="grid-inner">
             <div className="data-section">
               <h4>Selected Goalie</h4>
-              <p>Inside: {goalieReport?.saves?.plate_dist_saves?.['inside']?.toFixed(2)}%</p>
-              <p>Outside: {goalieReport?.saves?.plate_dist_saves?.['outside']?.toFixed(2)}%</p>
+              <p>Inside: {goalieReport?.plate_dist_saves?.['inside']?.toFixed(2)}%</p>
+              <p>Outside: {goalieReport?.plate_dist_saves?.['outside']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
-              <p>Inside: {averageGoalie?.saves?.plate_dist_saves?.['inside']?.toFixed(2)}%</p>
-              <p>Outside: {averageGoalie?.saves?.plate_dist_saves?.['outside']?.toFixed(2)}%</p>
+              <p>Inside: {averageGoalie?.plate_dist_saves?.['inside']?.toFixed(2)}%</p>
+              <p>Outside: {averageGoalie?.plate_dist_saves?.['outside']?.toFixed(2)}%</p>
             </div>
           </div>
         </div>
@@ -607,24 +607,24 @@ const SaveReport = ({ goalieID }) => {
             <div className="data-section">
               <h4>Selected Goalie</h4>
               <h5>Inside the home plate</h5>
-              <p>Head On: {goalieReport?.saves?.inside_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {goalieReport?.saves?.inside_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {goalieReport?.saves?.inside_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {goalieReport?.inside_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {goalieReport?.inside_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {goalieReport?.inside_dist_saves?.['Glove']?.toFixed(2)}%</p>
               <h5>Outside of the home plate</h5>
-              <p>Head On: {goalieReport?.saves?.outside_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {goalieReport?.saves?.outside_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {goalieReport?.saves?.outside_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {goalieReport?.outside_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {goalieReport?.outside_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {goalieReport?.outside_dist_saves?.['Glove']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
               <h5>Inside the home plate</h5>
-              <p>Head On: {averageGoalie?.saves?.inside_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {averageGoalie?.saves?.inside_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {averageGoalie?.saves?.inside_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {averageGoalie?.inside_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {averageGoalie?.inside_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {averageGoalie?.inside_dist_saves?.['Glove']?.toFixed(2)}%</p>
               <h5>Outside of the home plate</h5>
-              <p>Head On: {averageGoalie?.saves?.outside_dist_saves?.['Head On']?.toFixed(2)}%</p>
-              <p>Stick: {averageGoalie?.saves?.outside_dist_saves?.['Stick']?.toFixed(2)}%</p>
-              <p>Glove: {averageGoalie?.saves?.outside_dist_saves?.['Glove']?.toFixed(2)}%</p>
+              <p>Head On: {averageGoalie?.outside_dist_saves?.['Head On']?.toFixed(2)}%</p>
+              <p>Stick: {averageGoalie?.outside_dist_saves?.['Stick']?.toFixed(2)}%</p>
+              <p>Glove: {averageGoalie?.outside_dist_saves?.['Glove']?.toFixed(2)}%</p>
             </div>
           </div>
         </div>

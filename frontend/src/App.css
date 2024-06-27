@@ -25,6 +25,13 @@
   margin-bottom: 15px;
 }
 
+/* Flex container for year selectors */
+.year-selectors {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Optional: Adds spacing between the dropdowns */
+}
+
 /* Styles for labels */
 .label {
   margin-bottom: 5px;
