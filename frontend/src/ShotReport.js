@@ -222,9 +222,9 @@ const ShotReport = ({ goalieID, startYear, endYear }) => {
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
-              <p>GLove Side: {averageGoalie?.shots?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Stick Side: {averageGoalie?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Royal Road: {averageGoalie?.shots?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Glove Side: {averageGoalie?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Stick Side: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Royal Road: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <p>
@@ -275,8 +275,8 @@ const ShotReport = ({ goalieID, startYear, endYear }) => {
             </div>
             <div className="data-section">
               <h4>Average Goalie</h4>
-              <p>Inside of the Plate: {averageGoalie?.shots?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside of the Plate: {averageGoalie?.shots?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Inside of the Plate: {averageGoalie?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+              <p>Outside of the Plate: {averageGoalie?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
             <div className="data-section">
               <p>

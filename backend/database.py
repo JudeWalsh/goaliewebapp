@@ -140,19 +140,11 @@ class Database:
         value_counts_dict['EVENTS'] = len(df)
         goals_report['summary'] = value_counts_dict
 
-        # Apply the function to create the "Home Plate" column
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
-            axis=1)
         '''
         DIVIDE DATA BY AREA FOR GOALS SCORED
         '''
         # Filter rows for goals
         goals_df = df[df['event'] == 'GOAL'].copy()
-
-        # Add the 'side' column
-        goals_df['side'] = goals_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         # Calculate side distribution
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
@@ -183,18 +175,11 @@ class Database:
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
 
-        # Apply the function to create the "Home Plate" column
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
-            axis=1)
         '''
         DIVIDE DATA BY AREA FOR SHOTS SAVED
         '''
         saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
-
-        save_df['side'] = save_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         # Calculate side distribution
         side_distribution = save_df['side'].value_counts(normalize=True) * 100
@@ -224,19 +209,19 @@ class Database:
 
         # Drop columns with all NaN values
         df = df.dropna(how='all', axis=1)
+        shots_report = {}
 
-        # Apply the function to create the "Home Plate" column
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
-            axis=1)
+        '''
+        SUMMARY REPORT
+        '''
+        value_counts_dict = df['event'].value_counts().to_dict()
+        value_counts_dict['EVENTS'] = len(df)
+        shots_report['summary'] = value_counts_dict
+
         '''
         DIVIDE DATA BY AREA FOR SHOTS ON GOAL, SAVES AND GOALS
         '''
-        shots_report = {}
         shots_df = df[df['event'] != 'MISS'].copy()
-
-        shots_df['side'] = shots_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         glove_shots = shots_df[shots_df['side'] == 'Glove'].copy()
         stick_shots = shots_df[shots_df['side'] == 'Stick'].copy()
@@ -303,16 +288,8 @@ class Database:
 
         goals_report['summary'] = summary
 
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
-            axis=1)
-
         # Filter rows for goals
         goals_df = df[df['event'] == 'GOAL'].copy()
-
-        # Add the 'side' column
-        goals_df['side'] = goals_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         # Calculate side distribution
         side_distribution = goals_df['side'].value_counts(normalize=True) * 100
@@ -341,15 +318,8 @@ class Database:
         query = f"SELECT * FROM shots WHERE season >= {start_year} AND season <= {end_year}"
         df = pd.read_sql_query(query, self.conn)
 
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
-            axis=1)
-
         saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
-
-        save_df['side'] = save_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         # Calculate side distribution
         side_distribution = save_df['side'].value_counts(normalize=True) * 100
@@ -378,15 +348,8 @@ class Database:
         query = f"SELECT * FROM shots WHERE season >= {start_year} AND season <= {end_year}"
         df = pd.read_sql_query(query, self.conn)
 
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'],
-                                                         row['yCordAdjusted']) else 'outside', axis=1)
-
         shots_report = {}
         shots_df = df[df['event'] != 'MISS'].copy()
-
-        shots_df['side'] = shots_df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
 
         glove_shots = shots_df[shots_df['side'] == 'Glove'].copy()
         stick_shots = shots_df[shots_df['side'] == 'Stick'].copy()
@@ -499,11 +462,21 @@ class Database:
         # Read "NHL_shots.csv" into a pandas DataFrame
         df = pd.read_csv("2014-2022.csv")
 
+        df['homePlate'] = df.apply(
+            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
+            axis=1)
+
+        df['side'] = df['yCordAdjusted'].apply(
+            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+
         # Drop the "shots" table if it exists
         self.cursor.execute("DROP TABLE IF EXISTS shots")
 
         # Write the DataFrame to the "shots" table in the SQLite database
         df.to_sql(name='shots', con=self.conn, if_exists='replace', index=False)
+
+        # Create an index on the "season" column
+        self.cursor.execute("CREATE INDEX IF NOT EXISTS idx_season ON shots (season)")
 
         # Commit the transaction to save the changes
         self.conn.commit()
