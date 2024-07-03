@@ -536,15 +536,14 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
               <p>Goals: {averageGoalie?.summary?.['GOAL']?.toFixed(2)}</p>
             </div>
             <div className="data-section">
-              <p>An "event" is any play by play event that has to do with the goalie</p>
+              <p>An "event" is any play by play event where the selected goalie is involved</p>
               <p>A "miss" is a shot taken that was not put on net</p>
               <p>A "save" is a shot on Goal</p>
             </div>
             <div className="data-section">
               <p>
                 The "average goalie's" numbers are summary statistics on
-                every goalie with an amount of events within one standard
-                deviation of the selected goalie's
+                shots on every goalie since 2007
               </p>
             </div>
             <div className="data-section">

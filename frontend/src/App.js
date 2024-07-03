@@ -74,7 +74,7 @@ function App() {
     }
   };
 
-  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i); // last 50 years
+  const yearOptions = Array.from({ length: currentYear - 2007 + 1 }, (_, i) => currentYear - i);
 
   return (
     <div className="App">
