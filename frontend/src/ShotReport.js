@@ -7,7 +7,7 @@ import './ShotReport.css';
 // Initialize the heatmap module
 HighchartsHeatmap(Highcharts);
 
-const ShotReport = ({ goalieID, startYear, endYear }) => {
+const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
   const canvasRef1 = useRef(null);
@@ -215,7 +215,7 @@ const ShotReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Glove Side: {goalieReport?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Stick Side: {goalieReport?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Royal Road: {goalieReport?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
@@ -269,7 +269,7 @@ const ShotReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Inside of the Plate: {goalieReport?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Outside of the Plate: {goalieReport?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
             </div>
@@ -326,7 +326,7 @@ const ShotReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Inside Stick Side: {goalieReport?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Outside Stick Side: {goalieReport?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
               <p>Inside Glove Side: {goalieReport?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>

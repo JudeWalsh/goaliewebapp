@@ -166,6 +166,7 @@ class Database:
         return goals_report
 
     def save_report(self, goalieID, start_year=2022, end_year=2022):
+        saves_report = {}
         query = f"SELECT * FROM shots " \
                 f"WHERE goalieIdForShot = ? " \
                 f"AND season >= ? " \
@@ -176,9 +177,15 @@ class Database:
         df = df.dropna(how='all', axis=1)
 
         '''
+        SUMMARY REPORT
+        '''
+        value_counts_dict = df['event'].value_counts().to_dict()
+        value_counts_dict['EVENTS'] = len(df)
+        saves_report['summary'] = value_counts_dict
+
+        '''
         DIVIDE DATA BY AREA FOR SHOTS SAVED
         '''
-        saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
 
         # Calculate side distribution
@@ -320,6 +327,27 @@ class Database:
 
         saves_report = {}
         save_df = df[df['event'] == 'SHOT'].copy()
+
+        '''
+        SUMMARY REPORT
+        '''
+        summary = {}
+
+        df = df.dropna(how='all', axis=1)
+        df_filtered = df.groupby('goalieIdForShot').filter(lambda x: len(x) >= 0)
+        num_goalies = len(df_filtered['goalieIdForShot'].unique())
+        summary['EVENTS'] = len(df_filtered) / num_goalies
+
+        summary['SHOT'] = np.mean(df_filtered[df_filtered['event'] == 'SHOT']['goalieIdForShot'].value_counts())
+        summary['MISS'] = np.mean(df_filtered[df_filtered['event'] == 'MISS']['goalieIdForShot'].value_counts())
+        summary['GOAL'] = np.mean(df_filtered[df_filtered['event'] == 'GOAL']['goalieIdForShot'].value_counts())
+
+        summary['STD_EVENTS'] = df_filtered['goalieIdForShot'].value_counts().std()
+        summary['STD_SHOT'] = np.std(df_filtered[df_filtered['event'] == 'SHOT']['goalieIdForShot'].value_counts())
+        summary['STD_MISS'] = np.std(df_filtered[df_filtered['event'] == 'MISS']['goalieIdForShot'].value_counts())
+        summary['STD_GOAL'] = np.std(df_filtered[df_filtered['event'] == 'GOAL']['goalieIdForShot'].value_counts())
+
+        saves_report['summary'] = summary
 
         # Calculate side distribution
         side_distribution = save_df['side'].value_counts(normalize=True) * 100

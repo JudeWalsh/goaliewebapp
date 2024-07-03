@@ -9,7 +9,7 @@ import './GoalReport.css';
 HighchartsHeatmap(Highcharts);
 HighchartsAnnotations(Highcharts);
 
-const GoalReport = ({ goalieID, startYear, endYear }) => {
+const GoalReport = ({ goalieID, goalieName, startYear, endYear }) => {
   const [data1, setData1] = useState([]);
   const [goalieReport, setGoalieReport] = useState(null);
   const [averageGoalie, setAverageGoalie] = useState(null);
@@ -509,7 +509,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
 
    return (
     <div className="goal-report">
-      <h2>Goals Scored on Selected Goalie</h2>
+      <h2>Goals Scored on {goalieName}</h2>
       <h3>Shot Charts</h3>
       <div className="grid-container">
         <div className="grid-item">
@@ -522,7 +522,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Events: {goalieReport?.summary?.['EVENTS']?.toFixed(2)}</p>
               <p>Shots Missed: {goalieReport?.summary?.['MISS']?.toFixed(2)}</p>
               <p>Saves: {goalieReport?.summary?.['SHOT']?.toFixed(2)}</p>
@@ -548,7 +548,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
             </div>
             <div className="data-section">
               <p>
-                Shot chart to the left shows all goals scored on selected goalie in 2022
+                Shot chart to the left shows all goals scored on {goalieName} in 2022
               </p>
             </div>
             <div className="data-section">
@@ -568,7 +568,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Head On: {goalieReport?.side_dist_goals?.['Head On']?.toFixed(2)}%</p>
               <p>Stick: {goalieReport?.side_dist_goals?.['Stick']?.toFixed(2)}%</p>
               <p>Glove: {goalieReport?.side_dist_goals?.['Glove']?.toFixed(2)}%</p>
@@ -623,7 +623,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <p>Inside: {goalieReport?.plate_dist_goals?.['inside']?.toFixed(2)}%</p>
               <p>Outside: {goalieReport?.plate_dist_goals?.['outside']?.toFixed(2)}%</p>
             </div>
@@ -657,7 +657,7 @@ const GoalReport = ({ goalieID, startYear, endYear }) => {
         <div className="grid-item">
           <div className="grid-inner">
             <div className="data-section">
-              <h4>Selected Goalie</h4>
+              <h4>{goalieName}</h4>
               <h5>Inside the home plate</h5>
               <p>Head On: {goalieReport?.inside_dist_goals?.['Head On']?.toFixed(2)}%</p>
               <p>Stick: {goalieReport?.inside_dist_goals?.['Stick']?.toFixed(2)}%</p>

@@ -9,6 +9,7 @@ function App() {
   const [goalieOptions, setGoalieOptions] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedGoalie, setSelectedGoalie] = useState('');
+  const [selectedGoalieName, setSelectedGoalieName] = useState('');
   const currentYear = new Date().getFullYear();
   const defaultStartYear = currentYear - 2; // Default start year is 5 years ago
   const defaultEndYear = currentYear; // Default end year is the current year
@@ -47,7 +48,12 @@ function App() {
   };
 
   const handleGoalieChange = (event) => {
-    setSelectedGoalie(event.target.value);
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    const goalieID = selectedOption.value;
+    const goalieName = selectedOption.getAttribute('data-name');
+
+    setSelectedGoalie(goalieID);
+    setSelectedGoalieName(goalieName);
   };
 
   const handleStartYearChange = (event) => {
@@ -64,6 +70,7 @@ function App() {
     if (selectedGoalie) {
       const reportParams = {
         goalieID: selectedGoalie,
+        goalieName: selectedGoalieName,
         startYear,
         endYear,
       };
@@ -90,15 +97,22 @@ function App() {
           </select>
         </div>
         {selectedTeam && (
-          <div className="form-group">
-            <label htmlFor="goalie" className="label">Select a Goalie:</label>
-            <select id="goalie" className="select" value={selectedGoalie} onChange={handleGoalieChange}>
-              <option value="">Select a Goalie</option>
-              {goalieOptions.map((goalie) => (
-                <option key={goalie.id} value={goalie.id} className="option">{goalie.firstName} {goalie.lastName}</option>
-              ))}
-            </select>
-          </div>
+            <div className="form-group">
+              <label htmlFor="goalie" className="label">Select a Goalie:</label>
+              <select id="goalie" className="select" value={selectedGoalie} onChange={handleGoalieChange}>
+                <option value="">Select a Goalie</option>
+                {goalieOptions.map((goalie) => (
+                    <option
+                        key={goalie.id}
+                        value={goalie.id}
+                        data-name={`${goalie.firstName} ${goalie.lastName}`}
+                        className="option"
+                    >
+                      {goalie.firstName} {goalie.lastName}
+                    </option>
+                ))}
+              </select>
+            </div>
         )}
         <div className="form-group year-selectors">
           <div>
@@ -122,9 +136,9 @@ function App() {
         </div>
         <button type="submit" className="submit-button">Submit</button>
       </form>
-      {reportData && <GoalReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
-      {reportData && <SaveReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
-      {reportData && <ShotReport goalieID={reportData.goalieID} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData && <GoalReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData && <SaveReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData && <ShotReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
     </div>
   );
 }
