@@ -48,7 +48,7 @@ class Database:
         self.teamsGoalies = []
         self.conn = sqlite3.connect('NHL.db')
         self.cursor = self.conn.cursor()
-        # self.temp_db_stuff()
+        self.temp_db_stuff()
         # self.update_goalies()
         self.goalie = {}
         self.average_goalie = {}
@@ -391,18 +391,8 @@ class Database:
 
         return shots_report
 
-
-    def adjust_df(self, df):
-        # Apply the function to create the "homePlate" column
-        df['homePlate'] = df.apply(
-            lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'],
-                                                         row['yCordAdjusted']) else 'outside', axis=1)
-        df['side'] = df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
-        return df
-
     def goal_shot_cords(self, goalieID, start_year=2022, end_year=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season, homePlate, side " \
                 f"FROM shots " \
                 f"WHERE goalieIdForShot = ? " \
                 f"AND event = 'GOAL' " \
@@ -410,24 +400,22 @@ class Database:
                 f"AND season <= ?;"
         df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
         df = df.dropna(how='all', axis=1)
-        df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
     def all_goal_shot_cords(self, start_year=2022, end_year=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season, homePlate, side " \
                 f"FROM shots " \
                 f"WHERE event = 'GOAL' " \
                 f"AND season >= ?" \
                 f"AND season <= ?;"
         df = pd.read_sql_query(query, self.conn, params=(start_year, end_year))
         df = df.dropna(how='all', axis=1)
-        df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
     def save_shot_cords(self, goalieID, start_year=2022, end_year=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season, homePlate, side " \
                 f"FROM shots " \
                 f"WHERE goalieIdForShot = ? " \
                 f"AND event = 'SHOT' " \
@@ -435,30 +423,22 @@ class Database:
                 f"AND season <= ?;"
         df = pd.read_sql_query(query, self.conn, params=(goalieID, start_year, end_year))
         df = df.dropna(how='all', axis=1)
-        try:
-            df = self.adjust_df(df)
-        except Exception as e:
-            print("------------------ERROR------------")
-            print(df.head)
-            print(query)
-            print(str(e))
-            print("------------------ERROR------------")
         json_df = df.to_dict(orient='records')
         return json_df
 
     def all_save_shot_cords(self, start_year=2022, end_year=2022):
-        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season " \
+        query = f"SELECT xCordAdjusted, yCordAdjusted, shooterName, teamCode, season, homePlate, side " \
                 f"FROM shots " \
                 f"WHERE event = 'SHOT' " \
                 f"AND season >= ?" \
                 f"AND season <= ?;"
         df = pd.read_sql_query(query, self.conn, params=(start_year, end_year))
         df = df.dropna(how='all', axis=1)
-        df = self.adjust_df(df)
         json_df = df.to_dict(orient='records')
         return json_df
 
     def temp_db_stuff(self):
+        hand_dict = {}
         # Read "NHL_shots.csv" into a pandas DataFrame
         df = pd.read_csv("2014-2022.csv")
 
@@ -466,8 +446,29 @@ class Database:
             lambda row: 'inside' if self.is_within_house(row['xCordAdjusted'], row['yCordAdjusted']) else 'outside',
             axis=1)
 
-        df['side'] = df['yCordAdjusted'].apply(
-            lambda y: 'Stick' if y > 3 else ('Glove' if y < -3 else 'Head On'))
+        for team in self.teams:
+            url = f"https://api-web.nhle.com/v1/roster/{team}/20242025"
+            response = requests.get(url)
+
+            if response.status_code == 200:
+                data = response.json()
+                goalies = data['goalies']
+                for goalie in goalies:
+                    hand_dict[goalie['id']] = goalie['shootsCatches']
+
+        df['goalieCatches'] = df['goalieIdForShot'].apply(
+            lambda id: 'L' if hand_dict.get(id) == 'L' else 'R'
+        )
+
+        df['side'] = df.apply(
+            lambda row:
+            'Glove' if (row['yCordAdjusted'] > 3 and row['goalieCatches'] == 'R') or
+                       (row['yCordAdjusted'] < -3 and row['goalieCatches'] == 'L') else
+            ('Stick' if (row['yCordAdjusted'] < -3 and row['goalieCatches'] == 'R') or
+                        (row['yCordAdjusted'] > 3 and row['goalieCatches'] == 'L') else
+             'Head On'),
+            axis=1
+        )
 
         # Drop the "shots" table if it exists
         self.cursor.execute("DROP TABLE IF EXISTS shots")
