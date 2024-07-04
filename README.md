@@ -76,6 +76,8 @@ Runs the uvicorn script
 ## NHL.db
 Database file that contains all shots from the 2014-2022.csv file
 
+This file won't exist when you first clone the repo but the starting the backend will create it
+
 ## requirements.txt
 Contains all required libraries to run the backend server
 
