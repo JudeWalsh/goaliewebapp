@@ -43,7 +43,7 @@ Method 2: `python main.py`
 
 ## Start the React Frontend
 
-### Open a new Terminal and navigate to 'Frontend" directory
+### Open a new Terminal and navigate to 'Frontend' directory
 
 `cd frontend`
 
