@@ -48,7 +48,7 @@ class Database:
         self.teamsGoalies = []
         self.conn = sqlite3.connect('NHL.db')
         self.cursor = self.conn.cursor()
-        self.temp_db_stuff()
+        # self.temp_db_stuff()
         # self.update_goalies()
         self.goalie = {}
         self.average_goalie = {}

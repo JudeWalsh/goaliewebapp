@@ -33,3 +33,12 @@
   text-align: center;
   margin-top: -150px;
 }
+
+.switch-container {
+  position: absolute;
+  bottom: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
