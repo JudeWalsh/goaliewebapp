@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Switch from 'react-switch';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import './ShotReport.css';
-
-// Initialize the heatmap module
-HighchartsHeatmap(Highcharts);
 
 const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
   const [goalieReport, setGoalieReport] = useState(null);
@@ -13,6 +10,9 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
   const canvasRef1 = useRef(null);
   const canvasRef2 = useRef(null);
   const canvasRef3 = useRef(null);
+  const [visualizeSide, setVisualizeSide] = useState(true);
+  const [visualizeHouse, setVisualizeHouse] = useState(true);
+  const [visualizeSix, setVisualizeSix] = useState(true);
 
   // Fetch the report data
   useEffect(() => {
@@ -163,6 +163,18 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
     }
   });
 
+  const handleSideToggle = () => {
+    setVisualizeSide(!visualizeSide);
+  };
+
+  const handleHouseToggle = () => {
+    setVisualizeHouse(!visualizeHouse);
+  };
+
+  const handleSixToggle = () => {
+    setVisualizeSix(!visualizeSix);
+  };
+
   // Comment
   const Glove = createPieOptions(goalieReport?.glove_save_percent?.['SHOT'] || 0);
   const Stick = createPieOptions(goalieReport?.stick_save_percent?.['SHOT'] || 0);
@@ -214,35 +226,51 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
         </div>
         <div className="grid-item">
           <div className="grid-inner">
-            <div className="data-section">
-              <h4>{goalieName}</h4>
-              <p>Glove Side: {goalieReport?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Stick Side: {goalieReport?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Royal Road: {goalieReport?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <h4>Average Goalie</h4>
-              <p>Glove Side: {averageGoalie?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Stick Side: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Royal Road: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <p>
-                Save percentages by side of the ice
-              </p>
-            </div>
-            <div className="data-section">
-              <p>
-                Save percentage is percentage of shots out of all shots and goals
-              </p>
-            </div>
-            <div className={"data-section"}>
-              <p>
-                Higher percentage than the average goalie is better as the selected goalie
-                is saving shots more often in that area
-              </p>
-            </div>
+            { visualizeSide ? (
+              <React.Fragment>
+                <div className="data-section">
+                  <h4>{goalieName}</h4>
+                  <p>Glove Side: {goalieReport?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Stick Side: {goalieReport?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Royal Road: {goalieReport?.RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <h4>Average Goalie</h4>
+                  <p>Glove Side: {averageGoalie?.glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Stick Side: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Royal Road: {averageGoalie?.stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <p>
+                    Save percentages by side of the ice
+                  </p>
+                </div>
+                <div className="data-section">
+                  <p>
+                    Save percentage is percentage of shots out of all shots and goals
+                  </p>
+                </div>
+                <div className={"data-section"}>
+                  <p>
+                    Higher percentage than the average goalie is better as the selected goalie
+                    is saving shots more often in that area
+                  </p>
+                </div>
+              </React.Fragment>
+            ) : (
+              <div>
+                <p> other stuff</p>
+              </div>
+          )}
           </div>
+          <Switch
+            onChange={handleSideToggle}
+            checked={visualizeSide}
+            offColor="#888"
+            onColor="#0f0"
+            uncheckedIcon={false}
+            checkedIcon={false}
+          />
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
           <img
@@ -268,22 +296,40 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
         </div>
         <div className="grid-item">
           <div className="grid-inner">
-            <div className="data-section">
-              <h4>{goalieName}</h4>
-              <p>Inside of the Plate: {goalieReport?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside of the Plate: {goalieReport?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <h4>Average Goalie</h4>
-              <p>Inside of the Plate: {averageGoalie?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside of the Plate: {averageGoalie?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <p>
-                Save percentages by the inside or outside of the home plate
-              </p>
-            </div>
+            {visualizeHouse ? (
+              <React.Fragment>
+                <div className="data-section">
+                  <h4>{goalieName}</h4>
+                  <p>Inside of the Plate: {goalieReport?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside of the Plate: {goalieReport?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <h4>Average Goalie</h4>
+                  <p>Inside of the Plate: {averageGoalie?.inside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside of the Plate: {averageGoalie?.outside_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <p>
+                    Save percentages by the inside or outside of the home plate
+                  </p>
+                </div>
+              </React.Fragment>
+            ) : (
+                <div>
+                  <p>
+                    other stuff
+                  </p>
+                </div>
+            )}
           </div>
+          <Switch
+            onChange={handleHouseToggle}
+            checked={visualizeHouse}
+            offColor="#888"
+            onColor="#0f0"
+            uncheckedIcon={false}
+            checkedIcon={false}
+          />
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
           <img
@@ -325,30 +371,46 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
         </div>
         <div className="grid-item">
           <div className="grid-inner">
-            <div className="data-section">
-              <h4>{goalieName}</h4>
-              <p>Inside Stick Side: {goalieReport?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick Side: {goalieReport?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove Side: {goalieReport?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Glove Side Side: {goalieReport?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Royal Road: {goalieReport?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Royal Road: {goalieReport?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <h4>Average Goalie</h4>
-              <p>Inside Stick Side: {averageGoalie?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Stick Side: {averageGoalie?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Glove Side: {averageGoalie?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Glove Side Side: {averageGoalie?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Outside Royal Road: {averageGoalie?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-              <p>Inside Royal Road: {averageGoalie?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
-            </div>
-            <div className="data-section">
-              <p>
-                Save percentages by the six areas defined in the report
-              </p>
-            </div>
+            {visualizeSix ? (
+              <React.Fragment>
+                <div className="data-section">
+                  <h4>{goalieName}</h4>
+                  <p>Inside Stick Side: {goalieReport?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Stick Side: {goalieReport?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Inside Glove Side: {goalieReport?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Glove Side Side: {goalieReport?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Royal Road: {goalieReport?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Inside Royal Road: {goalieReport?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <h4>Average Goalie</h4>
+                  <p>Inside Stick Side: {averageGoalie?.inside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Stick Side: {averageGoalie?.outside_stick_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Inside Glove Side: {averageGoalie?.inside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Glove Side Side: {averageGoalie?.outside_glove_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Outside Royal Road: {averageGoalie?.outside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                  <p>Inside Royal Road: {averageGoalie?.inside_RR_save_percent?.['SHOT']?.toFixed(2)}%</p>
+                </div>
+                <div className="data-section">
+                  <p>
+                    Save percentages by the six areas defined in the report
+                  </p>
+                </div>
+              </React.Fragment>
+            ) : (
+                <div>
+                  <p>other stuff</p>
+                </div>
+            )}
           </div>
+          <Switch
+            onChange={handleSixToggle}
+            checked={visualizeSix}
+            offColor="#888"
+            onColor="#0f0"
+            uncheckedIcon={false}
+            checkedIcon={false}
+          />
         </div>
       </div>
     </div>
