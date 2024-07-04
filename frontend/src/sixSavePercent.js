@@ -49,17 +49,17 @@ const SixSavePercent = ({ goalieReport }) => {
 
   useEffect(() => {
     const horizontalLines = [
-      [0, 0],
-      [5, 5]
+      [-3, -3],
+      [-8.5, -8.5]
     ];
     const polygonPoints = [
-      [58, 21],
-      [58, -17],
-      [71, -17],
-      [88, -7],
-      [88, 12],
-      [71, 21]
-    ];
+        [58, 13],
+        [58, -25],
+        [71, -25],
+        [88, -15],
+        [88, 4],
+        [71, 13]
+        ];
     if (canvasRef.current) {
       drawPolygon(canvasRef.current, polygonPoints, horizontalLines);
     }

@@ -46,6 +46,7 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
       <h3>Shot Charts</h3>
       <div className="grid-container">
         <div className="grid-item" style={{ position: 'relative'}}>
+          <h2 style={{textAlign: 'center'}}>{goalieName}</h2>
           <SideSavePercent goalieReport={goalieReport}/>
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
@@ -83,7 +84,10 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
               </React.Fragment>
               </div>
             ) : (
-              <SideSavePercent goalieReport={averageGoalie}/>
+              <React.Fragment>
+                <h2 style={{textAlign: 'center'}}>Average Goalie</h2>
+                <SideSavePercent goalieReport={averageGoalie}/>
+              </React.Fragment>
             )}
           <div className="switch-container">
             <Switch
@@ -97,6 +101,7 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
           </div>
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
+          <h2 style={{textAlign: 'center'}}>{goalieName}</h2>
           <HouseSavePercent goalieReport={goalieReport}/>
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
@@ -121,7 +126,10 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
               </React.Fragment>
               </div>
             ) : (
+              <React.Fragment>
+                <h2 style={{textAlign: 'center'}}>Average Goalie</h2>
                 <HouseSavePercent goalieReport={averageGoalie}/>
+              </React.Fragment>
             )}
           <div className="switch-container">
             <Switch
@@ -134,10 +142,11 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
             />
           </div>
         </div>
-        <div className="grid-item" style={{ position: 'relative'}}>
+        <div className="grid-item" style={{position: 'relative'}}>
+          <h2 style={{textAlign: 'center'}}>{goalieName}</h2>
           <SixSavePercent goalieReport={goalieReport}/>
         </div>
-        <div className="grid-item" style={{ position: 'relative'}}>
+        <div className="grid-item" style={{position: 'relative'}}>
           {!visualizeSix ? (
             <div className="grid-inner">
               <React.Fragment>
@@ -167,7 +176,10 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
               </React.Fragment>
             </div>
               ) : (
-              <SixSavePercent goalieReport={averageGoalie}/>
+              <React.Fragment>
+                <h2 style={{textAlign: 'center'}}>Average Goalie</h2>
+                <SixSavePercent goalieReport={averageGoalie}/>
+              </React.Fragment>
               )}
           <div className="switch-container">
             <Switch

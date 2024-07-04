@@ -92,7 +92,7 @@ function App() {
           <select id="team" className="select" value={selectedTeam} onChange={handleTeamChange}>
             <option value="">Select a Team</option>
             {teamOptions.map((team, index) => (
-              <option key={index} value={team} className="option">{team}</option>
+                <option key={index} value={team} className="option">{team}</option>
             ))}
           </select>
         </div>
@@ -114,13 +114,17 @@ function App() {
               </select>
             </div>
         )}
+        <h4 style={{textAlign: 'center'}}>
+          Select range of years for report<br/>
+          Select same year twice for a single year report
+        </h4>
         <div className="form-group year-selectors">
           <div>
             <label htmlFor="startYear" className="label">Select Start Year:</label>
             <select id="startYear" className="select" value={startYear} onChange={handleStartYearChange}>
               <option value="">Select Start Year</option>
               {yearOptions.map((year) => (
-                <option key={year} value={year} className="option">{year}</option>
+                  <option key={year} value={year} className="option">{year}</option>
               ))}
             </select>
           </div>
@@ -129,14 +133,16 @@ function App() {
             <select id="endYear" className="select" value={endYear} onChange={handleEndYearChange}>
               <option value="">Select End Year</option>
               {yearOptions.map((year) => (
-                <option key={year} value={year} className="option">{year}</option>
+                  <option key={year} value={year} className="option">{year}</option>
               ))}
             </select>
           </div>
         </div>
         <button type="submit" className="submit-button">Submit</button>
       </form>
-      {reportData && <GoalReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
+      {reportData &&
+          <GoalReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear}
+                      endYear={reportData.endYear} />}
       {reportData && <SaveReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
       {reportData && <ShotReport goalieID={reportData.goalieID} goalieName={reportData.goalieName} startYear={reportData.startYear} endYear={reportData.endYear} />}
     </div>

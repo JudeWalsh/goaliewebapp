@@ -50,8 +50,8 @@ const SideSavePercent = ({ goalieReport }) => {
     // Drawing horizontal lines on the first canvas
   useEffect(() => {
     const horizontalLines = [
-      [0, 0],
-      [5, 5]
+      [-3, -3],
+      [-8.5, -8.5]
     ];
     if (canvasRef.current) {
       drawPolygon(canvasRef.current, [], horizontalLines);

@@ -28,7 +28,7 @@
 /* Flex container for year selectors */
 .year-selectors {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px; /* Optional: Adds spacing between the dropdowns */
 }
 
