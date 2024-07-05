@@ -127,11 +127,11 @@ const HouseSavePercent = ({ goalieReport }) => {
                   width: '100%', height: '100%'
               }}
           />
-          <div style={{position: 'absolute', top: '23%', left: '60%', width: '25%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '60%', width: '25%', height: '25%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={inside}/>
               <div style={{textAlign: 'center', marginTop: '-60%', zIndex: 1}}>Inside</div>
           </div>
-          <div style={{position: 'absolute', top: '23%', left: '35%', width: '25%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '35%', width: '25%', height: '25%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outside}/>
               <div style={{textAlign: 'center', marginTop: '-60%', zIndex: 1}}>Outside</div>
           </div>

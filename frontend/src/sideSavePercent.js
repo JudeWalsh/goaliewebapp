@@ -124,15 +124,15 @@ const SideSavePercent = ({ goalieReport }) => {
                 width: '100%', height: '100%'
             }}
         />
-        <div style={{position: 'absolute', top: '45%', left: '40%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '37%', left: '40%', width: '23%', height: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={Glove}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Glove</div>
         </div>
-        <div style={{position: 'absolute', top: '3%', left: '40%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '0%', left: '40%', width: '23%', height: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={Stick}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Stick</div>
         </div>
-        <div style={{position: 'absolute', top: '23%', left: '60%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '23%', left: '60%', width: '23%', height: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={RR}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Royal Road</div>
         </div>

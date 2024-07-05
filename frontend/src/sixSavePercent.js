@@ -134,27 +134,27 @@ const SixSavePercent = ({ goalieReport }) => {
                   width: '100%', height: '100%'
               }}
           />
-          <div style={{position: 'absolute', top: '-6%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '-6%', left: '32%', width: '23%', height: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideStick}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside Stick</div>
           </div>
-          <div style={{position: 'absolute', top: '55%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '55%', left: '32%', width: '23%', height: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideGlove}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside Glove</div>
           </div>
-          <div style={{position: 'absolute', top: '37%', left: '60%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '37%', left: '60%', width: '20%', height: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideGlove}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside Glove</div>
           </div>
-          <div style={{position: 'absolute', top: '13%', left: '60%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '13%', left: '60%', width: '20%', height: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideStick}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside Stick</div>
           </div>
-          <div style={{position: 'absolute', top: '23%', left: '75%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '75%', width: '20%', height: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideRR}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside RR</div>
           </div>
-          <div style={{position: 'absolute', top: '23%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '32%', width: '23%', height: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideRR}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside RR</div>
           </div>
