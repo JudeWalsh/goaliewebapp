@@ -1,70 +1,132 @@
-# Getting Started with Create React App
+# Getting Started with Goalie Web App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# About the project
 
-In the project directory, you can run:
+This project was created by Jude Walsh under Spartan Analytics LLC
 
-### `npm start`
+It is a React based Web App that uses a fastAPI backend to retrieve statistics from the NHL API and data supplied by moneypuck.com
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Use this web application to compare a selected active goalie in the league with the leagues average goalie.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The web app will divide all goals and saves by which side of the goalie they were shot from as well as if they were taken from inside the house or home plate.
 
-### `npm test`
+Compare how your selected goalie fairs in certain areas of the ice compared to the average goalie. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Change the year range to see how your selected goalie does in the same time frame as the average goalie. 
 
-### `npm run build`
+# Running the project
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## To start up the backend server
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Navigate to the 'backend' directory
+`cd backend`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Create Virtual environment
+`python -m venv venv`
 
-### `npm run eject`
+### Activate Virtual Environment
+On Mac: `source venv/bin/activate`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+On Windows: `venv/scripts/activate`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Install required libraries
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+`pip install -r requirements.txt`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Start the Server
 
-## Learn More
+Method 1: `uvicorn api:app --reload`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Method 2: `python main.py`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Start the React Frontend
 
-### Code Splitting
+### Open a new Terminal and navigate to 'Frontend' directory
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+`cd frontend`
 
-### Analyzing the Bundle Size
+## Start the project
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+`npm start`
 
-### Making a Progressive Web App
+# Backend Components
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 2014-2022.csv
+This CSV file is a dataset provided by moneypuck.com (https://moneypuck.com/data.htm) 
 
-### Advanced Configuration
+It contains every shot taken in the NHL from 2014 to 2022 which becomes the database for the remainder of the prject
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+The data is the same as could be collected from the NHL's api, with some expected values and adjusted coordinates for half ice plotting
 
-### Deployment
+## api.py
+Contains the routes for the FastAPI backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Serves as a connection between the backend and frontend
 
-### `npm run build` fails to minify
+## database.py
+Queries the database for data as requested by the front end
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Also runs summary calculations for the 'average goalie'
+
+## main.py
+Runs the uvicorn script 
+
+## NHL.db
+Database file that contains all shots from the 2014-2022.csv file
+
+This file won't exist when you first clone the repo but the starting the backend will create it
+
+## requirements.txt
+Contains all required libraries to run the backend server
+
+Install by running 
+
+`pip install -r requirements.txt`
+
+# Frontend Components
+
+## App.js
+Contains the dropdowns for selecting goalie
+
+Also contains and creates the report components when goalie is selected
+
+## GoalReport.js
+The first report created and shown
+
+Displays the goals scored on the selected goalie in the selected time frame
+
+First splits them into three sections:
+1. The goalies glove side
+2. The goalies stick side
+3. The royal road (Head on)
+
+Then splits all goals scored into inside and outside of the house, or home plate (Drawn on the chart)
+
+Finally splits all goals into "the six sections":
+1. inside glove side
+2. outside glove side
+3. inside stick side
+4. outside stick side
+5. inside royal road
+6. outside royal road
+
+All of these are displayed for the selected goalie in the form of scatter plots while showing percentage distributions compared to the average goalie
+
+Accounts for if the goalie is a lefty by indicating the "glove side" is on the goalies respective right
+
+## SaveReport.js
+The second report created and shown
+
+Accomplishes the same as the goal report only instead of goals, this report shows saves.
+
+'Saves' are the same as shots on goal, as determined by the NHL API as well as moneypuck.com
+## ShotReport.js
+Third and final report
+
+The shot report shows the save percentages by each separation defined earlier (inside or outside; glove or stick side)
+
+The right side of the report has a small toggle switch to switch between the text report comparison and the graphical comparison of save percentages between the selected goalie and the average
+## sideSavePercent.js / houseSavePercent.js / sixSavePercent.js
+Components for creating the save percentage charts, for both the selected goalie and the average goalie
