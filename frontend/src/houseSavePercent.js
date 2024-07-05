@@ -51,12 +51,12 @@ const HouseSavePercent = ({ goalieReport }) => {
   useEffect(() => {
     if (canvasRef.current) {
       const polygonPoints = [
-        [58, 13],
-        [58, -25],
-        [71, -25],
-        [88, -15],
-        [88, 4],
-        [71, 13]
+        [58, 12],
+        [58, -26],
+        [71, -26],
+        [88, -16],
+        [88, 3],
+        [71, 12]
       ];
       drawPolygon(canvasRef.current, polygonPoints);
     }
@@ -112,7 +112,7 @@ const HouseSavePercent = ({ goalieReport }) => {
   const outside = createPieOptions(goalieReport?.outside_save_percent?.['SHOT'] || 0);
 
   return (
-      <div className="side-save-percent">
+      <div className="side-save-percent" style={{width: '100%', height: '100%'}}>
           <img
               src="moneypuckrink half.jpg"
               alt="Background"
@@ -127,11 +127,11 @@ const HouseSavePercent = ({ goalieReport }) => {
                   width: '100%', height: '100%'
               }}
           />
-          <div style={{position: 'absolute', top: '15%', left: '60%', width: '25%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '60%', width: '25%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={inside}/>
               <div style={{textAlign: 'center', marginTop: '-60%', zIndex: 1}}>Inside</div>
           </div>
-          <div style={{position: 'absolute', top: '15%', left: '35%', width: '25%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '35%', width: '25%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outside}/>
               <div style={{textAlign: 'center', marginTop: '-60%', zIndex: 1}}>Outside</div>
           </div>

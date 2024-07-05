@@ -49,16 +49,16 @@ const SixSavePercent = ({ goalieReport }) => {
 
   useEffect(() => {
     const horizontalLines = [
-      [-3, -3],
-      [-8.5, -8.5]
+      [-4, -4],
+      [-9, -9]
     ];
     const polygonPoints = [
-        [58, 13],
-        [58, -25],
-        [71, -25],
-        [88, -15],
-        [88, 4],
-        [71, 13]
+        [58, 12],
+        [58, -26],
+        [71, -26],
+        [88, -16],
+        [88, 3],
+        [71, 12]
         ];
     if (canvasRef.current) {
       drawPolygon(canvasRef.current, polygonPoints, horizontalLines);
@@ -119,7 +119,7 @@ const SixSavePercent = ({ goalieReport }) => {
   const insideRR = createPieOptions(goalieReport?.inside_RR_save_percent?.['SHOT'] || 0);
 
   return (
-      <div className="side-save-percent">
+      <div className="side-save-percent" style={{width: '100%', height: '100%'}}>
           <img
               src="moneypuckrink half.jpg"
               alt="Background"
@@ -134,27 +134,27 @@ const SixSavePercent = ({ goalieReport }) => {
                   width: '100%', height: '100%'
               }}
           />
-          <div style={{position: 'absolute', top: '-16%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '-6%', left: '32%', width: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideStick}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside Stick</div>
           </div>
-          <div style={{position: 'absolute', top: '45%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '55%', left: '32%', width: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideGlove}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside Glove</div>
           </div>
-          <div style={{position: 'absolute', top: '27%', left: '60%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '37%', left: '60%', width: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideGlove}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside Glove</div>
           </div>
-          <div style={{position: 'absolute', top: '3%', left: '60%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '13%', left: '60%', width: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideStick}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside Stick</div>
           </div>
-          <div style={{position: 'absolute', top: '13%', left: '75%', width: '20%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '75%', width: '20%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={insideRR}/>
               <div style={{textAlign: 'center', marginTop: '-90%', zIndex: 1}}>Inside RR</div>
           </div>
-          <div style={{position: 'absolute', top: '13%', left: '32%', width: '23%', zIndex: 1}}>
+          <div style={{position: 'absolute', top: '23%', left: '32%', width: '23%', zIndex: 1}}>
               <HighchartsReact highcharts={Highcharts} options={outsideRR}/>
               <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Outside RR</div>
           </div>

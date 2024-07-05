@@ -50,8 +50,8 @@ const SideSavePercent = ({ goalieReport }) => {
     // Drawing horizontal lines on the first canvas
   useEffect(() => {
     const horizontalLines = [
-      [-3, -3],
-      [-8.5, -8.5]
+      [-4, -4],
+      [-9, -9]
     ];
     if (canvasRef.current) {
       drawPolygon(canvasRef.current, [], horizontalLines);
@@ -109,7 +109,7 @@ const SideSavePercent = ({ goalieReport }) => {
   const RR = createPieOptions(goalieReport?.RR_save_percent?.['SHOT'] || 0);
 
   return (
-    <div className="side-save-percent">
+    <div className="side-save-percent" style={{width: '90%', height: '90%'}}>
         <img
             src="moneypuckrink half.jpg"
             alt="Background"
@@ -124,15 +124,15 @@ const SideSavePercent = ({ goalieReport }) => {
                 width: '100%', height: '100%'
             }}
         />
-        <div style={{position: 'absolute', top: '-10%', left: '40%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '45%', left: '40%', width: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={Glove}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Glove</div>
         </div>
-        <div style={{position: 'absolute', top: '35%', left: '40%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '3%', left: '40%', width: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={Stick}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Stick</div>
         </div>
-        <div style={{position: 'absolute', top: '15%', left: '60%', width: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '23%', left: '60%', width: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={RR}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Royal Road</div>
         </div>
