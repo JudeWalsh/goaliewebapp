@@ -109,7 +109,7 @@ const SideSavePercent = ({ goalieReport }) => {
   const RR = createPieOptions(goalieReport?.RR_save_percent?.['SHOT'] || 0);
 
   return (
-    <div className="side-save-percent" style={{width: '90%', height: '90%'}}>
+    <div className="side-save-percent" style={{width: '100%', height: '100%'}}>
         <img
             src="moneypuckrink half.jpg"
             alt="Background"
@@ -124,7 +124,7 @@ const SideSavePercent = ({ goalieReport }) => {
                 width: '100%', height: '100%'
             }}
         />
-        <div style={{position: 'absolute', top: '37%', left: '40%', width: '23%', height: '23%', zIndex: 1}}>
+        <div style={{position: 'absolute', top: '45%', left: '40%', width: '23%', height: '23%', zIndex: 1}}>
             <HighchartsReact highcharts={Highcharts} options={Glove}/>
             <div style={{textAlign: 'center', marginTop: '-70%', zIndex: 1}}>Glove</div>
         </div>

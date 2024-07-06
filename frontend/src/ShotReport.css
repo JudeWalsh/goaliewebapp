@@ -37,8 +37,17 @@
 .switch-container {
   position: absolute;
   bottom: 10px; /* Adjust as needed */
-  left: 10px; /* Adjust as needed */
+  left: 13px; /* Adjust as needed */
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
+  justify-content: flex-start;
+  align-items: center; /* Align items vertically */
+  width: 100%
+}
+
+.switch-container p {
+  margin-left: 10px; /* Space between switch and text */
+  font-size: 17px; /* Adjust font size as needed */
+  color: #000; /* Adjust text color as needed */
+  background: white;
+  border: 1px solid black;
 }

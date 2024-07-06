@@ -98,6 +98,7 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
               uncheckedIcon={false}
               checkedIcon={false}
             />
+            <p>Toggle for visualization</p>
           </div>
         </div>
         <div className="grid-item" style={{ position: 'relative'}}>
@@ -140,6 +141,7 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
               uncheckedIcon={false}
               checkedIcon={false}
             />
+            <p>Toggle for visualization</p>
           </div>
         </div>
         <div className="grid-item" style={{position: 'relative'}}>
@@ -190,6 +192,7 @@ const ShotReport = ({ goalieID, goalieName, startYear, endYear }) => {
             uncheckedIcon={false}
             checkedIcon={false}
           />
+          <p>Toggle for visualization</p>
           </div>
         </div>
       </div>
