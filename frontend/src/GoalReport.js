@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
-import HighchartsHeatmap from 'highcharts/modules/heatmap';
-import HighchartsAnnotations from 'highcharts/modules/annotations';
 import HighchartsReact from 'highcharts-react-official';
 import './GoalReport.css';
 
-// Initialize the modules
-HighchartsHeatmap(Highcharts);
-HighchartsAnnotations(Highcharts);
 
 const GoalReport = ({ goalieID, goalieName, startYear, endYear }) => {
   const [data1, setData1] = useState([]);

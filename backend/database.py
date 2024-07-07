@@ -33,6 +33,7 @@ class Database:
             "OTT",  # Ottawa Senators
             "PHI",  # Philadelphia Flyers
             "PIT",  # Pittsburgh Penguins
+            "SEA",  # Seattle Kraken
             "SJS",  # San Jose Sharks
             "STL",  # St. Louis Blues
             "TBL",  # Tampa Bay Lightning
@@ -49,7 +50,7 @@ class Database:
         self.conn = sqlite3.connect('NHL.db')
         self.cursor = self.conn.cursor()
         self.temp_db_stuff()
-        # self.update_goalies()
+        self.update_goalies()
         self.goalie = {}
         self.average_goalie = {}
 
@@ -87,7 +88,7 @@ class Database:
         create_table_sql = f'CREATE TABLE IF NOT EXISTS goalies ({", ".join([f"{column} {column_data_types[column]}" for column in columns])})'
         self.cursor.execute(create_table_sql)
 
-        for team in self.teams:  # assuming self.teams is defined somewhere
+        for team in self.teams:
             url = f"https://api-web.nhle.com/v1/roster/{team}/20232024"
             response = requests.get(url)
             if response.status_code == 200:

@@ -10,7 +10,7 @@ origins = [
     "http://localhost:3000"
 ]
 
-# Add CORS middleware with allowed origins
+# CORS middleware with allowed origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -19,19 +19,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Define a route
+# Root
 @app.get("/")
 async def read_root():
     return {'API': 'UP'}
 
+# Return list of teams
 @app.get("/teams")
 async def NHL_teams():
     return db.teams
 
+# Given a team, return the goalies on the roster
 @app.get("/{team_code}/goalies")
 async def team_goalies(team_code):
     return db.team_goalies(team_code)
 
+# Given a goalie ID, return the report on their goals allowed
 @app.get("/goalreport/{goalieID}")
 async def goal_report(goalieID: str, startYear: int = Query(None), endYear: int = Query(None)):
     try:
@@ -42,6 +45,7 @@ async def goal_report(goalieID: str, startYear: int = Query(None), endYear: int 
     except Exception as e:
         return {'error': str(e)}
 
+# Given a goalie ID, return the report on their shots saved
 @app.get("/savereport/{goalieID}")
 async def save_report(goalieID: str, startYear: int = Query(None), endYear: int = Query(None)):
     if goalieID == 'all':
@@ -49,6 +53,7 @@ async def save_report(goalieID: str, startYear: int = Query(None), endYear: int 
     else:
         return db.save_report(goalieID=goalieID, start_year=startYear, end_year=endYear)
 
+# Given a goalie ID, return the report on their save percentages
 @app.get("/shotreport/{goalieID}")
 async def shot_report(goalieID: str, startYear: int = Query(None), endYear: int = Query(None)):
     if goalieID == 'all':
@@ -56,6 +61,7 @@ async def shot_report(goalieID: str, startYear: int = Query(None), endYear: int 
     else:
         return db.shot_report(goalieID=goalieID, start_year=startYear, end_year=endYear)
 
+# Given a goalie ID and time frame, return the coordinates of their goals allowed
 @app.get("/coordinates/goals/{goalieID}")
 async def goal_coordinates(goalieID: str, startYear: int = Query(None), endYear: int = Query(None)):
     if goalieID == 'all':
@@ -63,6 +69,7 @@ async def goal_coordinates(goalieID: str, startYear: int = Query(None), endYear:
     else:
         return db.goal_shot_cords(goalieID, start_year=startYear, end_year=endYear)
 
+# Given a goalie ID and time frame, return the coordinates of their shots saved
 @app.get("/coordinates/saves/{goalieID}")
 async def save_coordinates(goalieID: str, startYear: int = Query(None), endYear: int = Query(None)):
     if goalieID == 'all':
